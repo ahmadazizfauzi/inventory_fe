@@ -1,0 +1,129 @@
+"use client";
+
+import React, { useState } from "react";
+import AppTypography from "@/components/typography/AppTypography";
+import AppSidebar, { SidebarMenuGroup } from "@/components/navigation/AppSidebar";
+import {
+  LayoutDashboard,
+  Package,
+  Layers,
+  Truck,
+  ArrowLeftRight,
+  Users,
+  Settings,
+  Boxes,
+} from "lucide-react";
+
+export default function SidebarSection() {
+  const [activeMenu, setActiveMenu] = useState("dashboard");
+
+  const sampleMenuGroups: SidebarMenuGroup[] = [
+    {
+      heading: "OVERVIEW",
+      items: [
+        {
+          id: "dashboard",
+          label: "Dashboard",
+          icon: <LayoutDashboard size={18} />,
+          badge: "Live",
+          badgeVariant: "softSuccess",
+          onClick: () => setActiveMenu("dashboard"),
+        },
+      ],
+    },
+    {
+      heading: "INVENTORY MANAGEMENT",
+      items: [
+        {
+          id: "products",
+          label: "Produk & Stok",
+          icon: <Package size={18} />,
+          badge: 150,
+          badgeVariant: "softPrimary",
+          onClick: () => setActiveMenu("products"),
+        },
+        {
+          id: "categories",
+          label: "Kategori Barang",
+          icon: <Layers size={18} />,
+          onClick: () => setActiveMenu("categories"),
+        },
+        {
+          id: "suppliers",
+          label: "Data Supplier",
+          icon: <Truck size={18} />,
+          onClick: () => setActiveMenu("suppliers"),
+        },
+      ],
+    },
+    {
+      heading: "TRANSACTIONS",
+      items: [
+        {
+          id: "mutations",
+          label: "Mutasi Stok",
+          icon: <ArrowLeftRight size={18} />,
+          badge: "5 Kritis",
+          badgeVariant: "softWarning",
+          onClick: () => setActiveMenu("mutations"),
+        },
+      ],
+    },
+    {
+      heading: "SYSTEM",
+      items: [
+        {
+          id: "users",
+          label: "Manajemen User",
+          icon: <Users size={18} />,
+          onClick: () => setActiveMenu("users"),
+        },
+        {
+          id: "settings",
+          label: "Pengaturan",
+          icon: <Settings size={18} />,
+          onClick: () => setActiveMenu("settings"),
+        },
+      ],
+    },
+  ];
+
+  return (
+    <section id="sidebar" className="mb-5 pb-4">
+      <div className="mb-4">
+        <AppTypography variant="eyebrow" tone="accent" className="d-block mb-1">
+          AppSidebar.tsx
+        </AppTypography>
+        <AppTypography variant="h2" tone="primary" className="mb-2">
+          Sidebar Navigation
+        </AppTypography>
+        <AppTypography variant="pageSubtitle" tone="secondary">
+          Komponen sidebar backoffice berbasis Bootstrap dengan grup heading, item navigasi aktif, badge notifikasi, dan widget profil admin.
+        </AppTypography>
+      </div>
+
+      <div
+        className="rounded-3 border overflow-hidden p-0 shadow-sm"
+        style={{
+          backgroundColor: "var(--app-surface)",
+          borderColor: "var(--app-border)",
+          maxWidth: 320,
+        }}
+      >
+        <AppSidebar
+          brandTitle="PT Sistem Integrasi"
+          brandSubtitle="Inventory Backoffice"
+          brandIcon={<Boxes size={20} />}
+          menuGroups={sampleMenuGroups}
+          activeId={activeMenu}
+          width="100%"
+          user={{
+            name: "Ahmad Aziz Fauzi",
+            role: "Superadmin",
+            onLogout: () => alert("Logout action triggered"),
+          }}
+        />
+      </div>
+    </section>
+  );
+}
