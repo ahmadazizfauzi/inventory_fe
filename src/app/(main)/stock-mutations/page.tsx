@@ -259,17 +259,33 @@ export default function StockMutationsPage() {
       header: "Operator",
       render: (row) => (
         <div className="d-flex align-items-center gap-1">
-          <User size={13} className="text-muted" />
-          <AppTypography variant="bodySm" weight="medium" className="m-0">
+          <User size={13} className="text-muted flex-shrink-0" />
+          <AppTypography variant="bodySm" weight="medium" className="m-0 text-truncate">
             {row.user?.name || "Staf Sistem"}
           </AppTypography>
-          {row.user?.role && (
-            <AppBadge variant="softSecondary" className="ms-1 px-1 py-0">
-              {row.user.role}
-            </AppBadge>
-          )}
         </div>
       ),
+    },
+    {
+      key: "role",
+      header: "Role",
+      align: "center",
+      width: 110,
+      render: (row) => {
+        if (!row.user?.role) return <span className="text-muted small">-</span>;
+        const role = row.user.role;
+        const variant =
+          role === "superadmin"
+            ? "softPrimary"
+            : role === "admin"
+            ? "softSecondary"
+            : "softInfo";
+        return (
+          <AppBadge variant={variant} className="text-capitalize px-2 py-0.5">
+            {role}
+          </AppBadge>
+        );
+      },
     },
     {
       key: "supplier_notes",
@@ -354,7 +370,7 @@ export default function StockMutationsPage() {
             data={filteredMutations}
             keyExtractor={(row) => row.id}
             isLoading={loading}
-            minWidth={950}
+            minWidth={1050}
             emptyMessage={
               search || isFilterActive
                 ? "Tidak ada data riwayat mutasi yang cocok dengan kriteria filter atau pencarian."

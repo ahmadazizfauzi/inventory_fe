@@ -59,9 +59,6 @@ export default function CreateProductPage() {
 
     getCategories().then((data) => {
       setCategories(data);
-      if (data.length > 0) {
-        setFormData((prev) => ({ ...prev, category_id: String(data[0].id) }));
-      }
     });
   }, [router]);
 
@@ -105,6 +102,15 @@ export default function CreateProductPage() {
     setLoading(false);
 
     if (res.status) {
+      setFormData({
+        sku: "",
+        name: "",
+        category_id: "",
+        purchase_price: "",
+        selling_price: "",
+        stock: "0",
+        min_stock: "5",
+      });
       if (typeof window !== "undefined") {
         sessionStorage.setItem(
           "flash_alert",
@@ -179,16 +185,20 @@ export default function CreateProductPage() {
             <div className="col-12 col-md-6">
               <AppDropdown
                 label="Kategori Produk *"
+                placeholder="-- Pilih Kategori Produk --"
                 searchable
                 searchPlaceholder="Cari kategori barang..."
                 value={formData.category_id}
                 onChange={(val) => setFormData({ ...formData, category_id: String(val) })}
                 error={fieldErrors.category_id}
-                options={categories.map((c) => ({
-                  value: String(c.id),
-                  label: c.name,
-                  description: c.description || undefined,
-                }))}
+                options={[
+                  { value: "", label: "-- Pilih Kategori Produk --" },
+                  ...categories.map((c) => ({
+                    value: String(c.id),
+                    label: c.name,
+                    description: c.description || undefined,
+                  })),
+                ]}
               />
             </div>
 

@@ -72,6 +72,7 @@ export default function CreateCategoryPage() {
     setLoading(false);
 
     if (res.status) {
+      setFormData({ name: "", description: "" });
       if (typeof window !== "undefined") {
         sessionStorage.setItem(
           "flash_alert",

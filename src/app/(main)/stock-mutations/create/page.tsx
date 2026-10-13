@@ -89,6 +89,16 @@ export default function CreateStockMutationPage() {
   });
 
   useEffect(() => {
+    setFormData({
+      product_id: "",
+      type: "in",
+      quantity: "1",
+      supplier_id: "",
+      notes: "",
+    });
+    setFieldErrors({});
+    setAlert(null);
+
     Promise.all([
       getProducts({ per_page: 100 }),
       getSuppliers(),
@@ -152,6 +162,13 @@ export default function CreateStockMutationPage() {
     setLoading(false);
 
     if (res.status) {
+      setFormData({
+        product_id: "",
+        type: "in",
+        quantity: "1",
+        supplier_id: "",
+        notes: "",
+      });
       if (typeof window !== "undefined") {
         sessionStorage.setItem(
           "flash_alert",

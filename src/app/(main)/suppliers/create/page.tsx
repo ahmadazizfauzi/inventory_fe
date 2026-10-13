@@ -76,6 +76,7 @@ export default function CreateSupplierPage() {
     setLoading(false);
 
     if (res.status) {
+      setFormData({ name: "", phone: "", email: "", address: "" });
       if (typeof window !== "undefined") {
         sessionStorage.setItem(
           "flash_alert",

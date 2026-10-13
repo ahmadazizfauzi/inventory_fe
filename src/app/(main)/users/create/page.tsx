@@ -46,6 +46,7 @@ export default function CreateUserPage() {
     setLoading(true);
     const res = await createUser(formData);
     if (res.status) {
+      setFormData({ name: "", email: "", password: "", role: "staff" });
       if (typeof window !== "undefined") {
         sessionStorage.setItem(
           "flash_alert",
