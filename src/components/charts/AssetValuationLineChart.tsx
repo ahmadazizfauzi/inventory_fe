@@ -9,6 +9,7 @@ export interface ValuationTrendPoint {
   label: string;
   asset_value: number;
   market_value: number;
+  has_data?: boolean;
 }
 
 interface AssetValuationLineChartProps {
@@ -25,23 +26,22 @@ export default function AssetValuationLineChart({
   // Fallback demo points if data is empty
   const points = useMemo(() => {
     if (data && data.length > 0) return data;
-    // Fallback generator for 30 days
-    return Array.from({ length: 30 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (29 - i));
-      return {
-        date: d.toISOString().split("T")[0],
-        label: `${d.getDate()} ${d.toLocaleString("id-ID", { month: "short" })}`,
+    const today = new Date();
+    return [
+      {
+        date: today.toISOString().split("T")[0],
+        label: `${today.getDate()} ${today.toLocaleString("id-ID", { month: "short" })}`,
         asset_value: 0,
         market_value: 0,
-      };
-    });
+        has_data: false,
+      },
+    ];
   }, [data]);
 
   // Compute SVG dimensions & scaling
   const width = 850;
   const height = 300;
-  const padding = { top: 25, right: 30, bottom: 40, left: 75 };
+  const padding = { top: 25, right: 35, bottom: 40, left: 75 };
 
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
@@ -64,6 +64,7 @@ export default function AssetValuationLineChart({
     const ticks = [0, step, step * 2, step * 3, max];
 
     const coords = points.map((_, i) => {
+      if (points.length === 1) return padding.left + chartWidth / 2;
       return padding.left + (i / Math.max(1, points.length - 1)) * chartWidth;
     });
 
@@ -106,8 +107,11 @@ export default function AssetValuationLineChart({
     return `${marketPath} L ${lastX},${baseY} L ${firstX},${baseY} Z`;
   }, [marketPath, xCoords, padding.top, chartHeight]);
 
-  // Active hover point data
-  const activePoint = hoverIndex !== null ? points[hoverIndex] : null;
+  // Active hover point data (only valid if hovered point has data)
+  const activePoint =
+    hoverIndex !== null && points[hoverIndex] && points[hoverIndex].has_data !== false
+      ? points[hoverIndex]
+      : null;
 
   // Format short rupiah for Y axis (e.g. 50 Jt or 500 Rb)
   const formatCompactRupiah = (val: number) => {
@@ -116,6 +120,14 @@ export default function AssetValuationLineChart({
     if (val >= 1_000) return `Rp ${(val / 1_000).toFixed(0)} Rb`;
     return `Rp ${val}`;
   };
+
+  const chartTitle = useMemo(() => {
+    const dataPointsCount = points.filter((p) => p.has_data !== false).length;
+    if (dataPointsCount <= 1) {
+      return "Tren Perbandingan Valuasi Aset (Data Terkini)";
+    }
+    return `Tren Perbandingan Valuasi Aset (${dataPointsCount} Hari Terakhir)`;
+  }, [points]);
 
   return (
     <div
@@ -139,7 +151,7 @@ export default function AssetValuationLineChart({
               <TrendingUp size={16} />
             </span>
             <h5 className="m-0 fw-bold" style={{ color: "var(--app-text-primary)", fontSize: "16px" }}>
-              Tren Perbandingan Valuasi Aset (30 Hari Terakhir)
+              {chartTitle}
             </h5>
           </div>
           <p className="m-0 text-muted" style={{ fontSize: "13px" }}>
@@ -228,9 +240,11 @@ export default function AssetValuationLineChart({
             );
           })}
 
-          {/* X Axis Labels (Every ~5 days to prevent clutter) */}
+          {/* X Axis Labels: Show all labels if points <= 7, otherwise space evenly */}
           {points.map((p, idx) => {
-            if (idx % 5 !== 0 && idx !== points.length - 1) return null;
+            const shouldShow =
+              points.length <= 7 || idx % 4 === 0 || idx === points.length - 1;
+            if (!shouldShow) return null;
             const x = xCoords[idx];
             return (
               <text
@@ -269,8 +283,47 @@ export default function AssetValuationLineChart({
             strokeLinejoin="round"
           />
 
-          {/* Interactive Hover Guides & Circles */}
-          {hoverIndex !== null && (
+          {/* Prominent Circle Nodes on dates that have real data */}
+          {points.map((p, idx) => {
+            if (p.has_data === false && p.asset_value === 0 && p.market_value === 0) {
+              return null;
+            }
+            const isHovered = hoverIndex === idx;
+            return (
+              <g key={`data-node-${idx}`}>
+                {/* Node for Asset Line (Modal Aset / HPP) */}
+                <circle
+                  cx={xCoords[idx]}
+                  cy={getY(p.asset_value)}
+                  r={isHovered ? "6.5" : "5"}
+                  fill="#6366f1"
+                  stroke="#ffffff"
+                  strokeWidth={isHovered ? "2.5" : "2"}
+                  style={{
+                    filter: "drop-shadow(0 2px 5px rgba(99, 102, 241, 0.6))",
+                    transition: "all 0.15s ease",
+                  }}
+                />
+
+                {/* Node for Market Line (Nilai Jual) */}
+                <circle
+                  cx={xCoords[idx]}
+                  cy={getY(p.market_value)}
+                  r={isHovered ? "6.5" : "5"}
+                  fill="#10b981"
+                  stroke="#ffffff"
+                  strokeWidth={isHovered ? "2.5" : "2"}
+                  style={{
+                    filter: "drop-shadow(0 2px 5px rgba(16, 185, 129, 0.6))",
+                    transition: "all 0.15s ease",
+                  }}
+                />
+              </g>
+            );
+          })}
+
+          {/* Interactive Hover Guides ONLY when activePoint exists */}
+          {activePoint && hoverIndex !== null && (
             <g>
               {/* Vertical Guide Line */}
               <line
@@ -283,36 +336,20 @@ export default function AssetValuationLineChart({
                 strokeWidth="1.5"
                 opacity={0.6}
               />
-
-              {/* Point on Asset Line */}
-              <circle
-                cx={xCoords[hoverIndex]}
-                cy={getY(points[hoverIndex].asset_value)}
-                r="5"
-                fill="#6366f1"
-                stroke="#ffffff"
-                strokeWidth="2"
-              />
-
-              {/* Point on Market Line */}
-              <circle
-                cx={xCoords[hoverIndex]}
-                cy={getY(points[hoverIndex].market_value)}
-                r="5"
-                fill="#10b981"
-                stroke="#ffffff"
-                strokeWidth="2"
-              />
             </g>
           )}
 
-          {/* Invisible hover trigger columns */}
-          {points.map((_, idx) => {
+          {/* Hover trigger columns: ONLY rendered for dates that have real data! */}
+          {points.map((p, idx) => {
+            // DO NOT allow hovering on dates with NO data!
+            if (p.has_data === false && p.asset_value === 0 && p.market_value === 0) {
+              return null;
+            }
             const x = xCoords[idx];
-            const colWidth = chartWidth / points.length;
+            const colWidth = Math.max(50, chartWidth / Math.max(1, points.length));
             return (
               <rect
-                key={idx}
+                key={`trigger-${idx}`}
                 x={x - colWidth / 2}
                 y={padding.top}
                 width={colWidth}
@@ -326,20 +363,20 @@ export default function AssetValuationLineChart({
           })}
         </svg>
 
-        {/* Hover Tooltip Overlay Box */}
+        {/* Hover Tooltip Overlay Box (Only shown when activePoint exists) */}
         {activePoint && hoverIndex !== null && (
           <div
             className="position-absolute shadow-lg border rounded-3 p-3 pointer-events-none"
             style={{
               top: 15,
               left: Math.min(
-                Math.max(15, (xCoords[hoverIndex] / width) * 100),
+                Math.max(10, (xCoords[hoverIndex] / width) * 100 - 10),
                 70
               ) + "%",
               backgroundColor: "var(--app-surface)",
               borderColor: "var(--app-border)",
               zIndex: 10,
-              minWidth: 220,
+              minWidth: 230,
               pointerEvents: "none",
             }}
           >
