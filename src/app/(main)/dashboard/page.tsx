@@ -6,6 +6,7 @@ import {
   AppStatCard,
   AppButton,
   AppSkeletonStatCard,
+  AssetValuationLineChart,
 } from "@/components";
 import axiosInstance from "@/lib/axiosInstance";
 import { formatRupiah } from "@/lib/formatters";
@@ -25,6 +26,12 @@ interface DashboardSummary {
   low_stock_count: number;
   out_of_stock_count: number;
   today_mutations: number;
+  valuation_trend?: {
+    date: string;
+    label: string;
+    asset_value: number;
+    market_value: number;
+  }[];
 }
 
 export default function DashboardPage() {
@@ -115,6 +122,14 @@ export default function DashboardPage() {
             </div>
           </>
         )}
+      </div>
+
+      {/* 30-Day Valuation Trend Line Chart */}
+      <div className="w-100">
+        <AssetValuationLineChart
+          data={summary?.valuation_trend || []}
+          isLoading={loadingSummary}
+        />
       </div>
     </div>
   );

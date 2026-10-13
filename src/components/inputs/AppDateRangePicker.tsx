@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export interface DateRangeValue {
@@ -85,13 +86,18 @@ function parseDate(dateStr: string | null): Date | null {
 export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
   value = { startDate: null, endDate: null },
   onChange,
-  placeholder = "Pilih Rentang Tanggal",
+  placeholder = "Pilih rentang tanggal...",
   disabled = false,
   className = "",
   label,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const modalBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Temporary selection state during popover open
   const [tempStart, setTempStart] = useState<string | null>(value.startDate || null);
@@ -100,7 +106,7 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
 
   // Calender view state: Month 1 (left) and Month 2 (right)
   const initialYear = parseDate(value.startDate)?.getFullYear() ?? 2026;
-  const initialMonth = parseDate(value.startDate)?.getMonth() ?? 8; // September
+  const initialMonth = parseDate(value.startDate)?.getMonth() ?? 8; // September default
   const [viewYear1, setViewYear1] = useState(initialYear);
   const [viewMonth1, setViewMonth1] = useState(initialMonth); // 0-11
 
@@ -124,21 +130,6 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
       setViewMonth1(now.getMonth());
     }
   }, [value.startDate, value.endDate]);
-
-  // Click outside listener to close popup
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
 
   // Handle Preset Selection
   const applyPreset = (preset: PresetKey) => {
@@ -335,7 +326,7 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
     if (tempStart) {
       return `${formatDisplayDate(tempStart)} - ${formatDisplayDate(tempStart)}`;
     }
-    return "All Dates";
+    return "Semua Tanggal (All Dates)";
   }, [tempStart, tempEnd]);
 
   // Helper to render calendar grid
@@ -357,7 +348,7 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
             type="button"
             className="btn btn-sm btn-link text-decoration-none p-1 text-secondary"
             onClick={onPrev}
-            style={{ borderRadius: "50%" }}
+            style={{ borderRadius: "50%", color: "var(--app-text-secondary)" }}
           >
             <ChevronLeft size={18} />
           </button>
@@ -365,10 +356,11 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
           <div className="d-flex align-items-center gap-2">
             {/* Month Dropdown */}
             <select
-              className="form-select form-select-sm py-1 px-2 border-0 fw-semibold"
+              className="form-select form-select-sm py-1 px-2 fw-semibold"
               style={{
-                backgroundColor: "var(--app-surface-hover)",
-                color: "var(--app-text)",
+                backgroundColor: "var(--app-surface-subtle)",
+                borderColor: "var(--app-border)",
+                color: "var(--app-text-primary)",
                 borderRadius: "8px",
                 width: "auto",
                 cursor: "pointer",
@@ -386,10 +378,11 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
 
             {/* Year Dropdown */}
             <select
-              className="form-select form-select-sm py-1 px-2 border-0 fw-semibold"
+              className="form-select form-select-sm py-1 px-2 fw-semibold"
               style={{
-                backgroundColor: "var(--app-surface-hover)",
-                color: "var(--app-text)",
+                backgroundColor: "var(--app-surface-subtle)",
+                borderColor: "var(--app-border)",
+                color: "var(--app-text-primary)",
                 borderRadius: "8px",
                 width: "auto",
                 cursor: "pointer",
@@ -410,7 +403,7 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
             type="button"
             className="btn btn-sm btn-link text-decoration-none p-1 text-secondary"
             onClick={onNext}
-            style={{ borderRadius: "50%" }}
+            style={{ borderRadius: "50%", color: "var(--app-text-secondary)" }}
           >
             <ChevronRight size={18} />
           </button>
@@ -424,8 +417,8 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
           {DAY_NAMES.map((day) => (
             <div
               key={day}
-              className="py-1 text-muted fw-semibold"
-              style={{ fontSize: "12px" }}
+              className="py-1 fw-semibold"
+              style={{ fontSize: "12px", color: "var(--app-text-muted)" }}
             >
               {day}
             </div>
@@ -464,8 +457,13 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
               return (
                 <div
                   key={idx}
-                  className="d-flex align-items-center justify-content-center text-muted opacity-25"
-                  style={{ height: "36px", fontSize: "13px" }}
+                  className="d-flex align-items-center justify-content-center"
+                  style={{
+                    height: "36px",
+                    fontSize: "13px",
+                    color: "var(--app-text-muted)",
+                    opacity: 0.3,
+                  }}
                 >
                   {dayNum}
                 </div>
@@ -474,18 +472,16 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
 
             // In range background styling
             let trackBg = "transparent";
-            let borderRadius = "50%";
-            let textColor = "var(--app-text)";
+            let textColor = "var(--app-text-primary)";
             let isSelected = isStart || isEnd;
 
             if (isInRange) {
-              trackBg = "rgba(108, 92, 231, 0.16)";
-              borderRadius = "0";
+              trackBg = "rgba(79, 70, 229, 0.22)";
               textColor = "var(--app-primary)";
             } else if (isStart && tempEnd) {
-              trackBg = "linear-gradient(90deg, transparent 50%, rgba(108, 92, 231, 0.16) 50%)";
+              trackBg = "linear-gradient(90deg, transparent 50%, rgba(79, 70, 229, 0.22) 50%)";
             } else if (isEnd && tempStart) {
-              trackBg = "linear-gradient(90deg, rgba(108, 92, 231, 0.16) 50%, transparent 50%)";
+              trackBg = "linear-gradient(90deg, rgba(79, 70, 229, 0.22) 50%, transparent 50%)";
             }
 
             return (
@@ -507,7 +503,7 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
                     borderRadius: "50%",
                     backgroundColor: isSelected ? "var(--app-primary)" : "transparent",
                     color: isSelected ? "#ffffff" : textColor,
-                    boxShadow: isSelected ? "0 2px 6px rgba(108, 92, 231, 0.35)" : "none",
+                    boxShadow: isSelected ? "0 2px 8px rgba(79, 70, 229, 0.45)" : "none",
                     fontSize: "13px",
                   }}
                 >
@@ -522,7 +518,7 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
   };
 
   return (
-    <div className={`position-relative ${className}`} ref={containerRef}>
+    <div className={`position-relative ${className}`}>
       {label && (
         <label
           className="form-label mb-1 fw-medium"
@@ -532,26 +528,26 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
         </label>
       )}
 
-      {/* Input Trigger Button */}
+      {/* Input Trigger Button (Perfect in Light & Dark Mode) */}
       <div
-        className={`d-flex align-items-center justify-content-between px-3 py-2 border rounded-3 bg-white ${
+        className={`d-flex align-items-center justify-content-between px-3 py-2 border rounded-3 ${
           disabled ? "opacity-50 pe-none" : ""
         }`}
         style={{
           borderColor: isOpen ? "var(--app-primary)" : "var(--app-border)",
-          boxShadow: isOpen ? "0 0 0 3px rgba(108, 92, 231, 0.15)" : "none",
+          boxShadow: isOpen ? "0 0 0 3px rgba(79, 70, 229, 0.15)" : "none",
           backgroundColor: "var(--app-surface)",
           cursor: disabled ? "not-allowed" : "pointer",
-          minHeight: "40px",
+          minHeight: "42px",
           transition: "all 0.15s ease-in-out",
         }}
-        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(true)}
       >
         <span
           className="text-truncate"
           style={{
             fontSize: "13.5px",
-            color: displayLabel ? "var(--app-text)" : "var(--app-text-muted)",
+            color: displayLabel ? "var(--app-text-primary)" : "var(--app-text-muted)",
             fontWeight: displayLabel ? 500 : 400,
           }}
         >
@@ -562,8 +558,8 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
           {displayLabel && (
             <button
               type="button"
-              className="btn btn-link p-0 text-muted border-0"
-              style={{ lineHeight: 1 }}
+              className="btn btn-link p-0 border-0"
+              style={{ lineHeight: 1, color: "var(--app-text-muted)" }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleReset();
@@ -577,161 +573,208 @@ export const AppDateRangePicker: React.FC<AppDateRangePickerProps> = ({
         </div>
       </div>
 
-      {/* Popover Dropdown (Matches Screenshot Visual Design) */}
-      {isOpen && (
-        <div
-          className="position-absolute shadow-lg border rounded-4 bg-white z-3 mt-2"
-          style={{
-            top: "100%",
-            left: 0,
-            width: "min(720px, 94vw)",
-            backgroundColor: "var(--app-surface)",
-            borderColor: "var(--app-border)",
-            color: "var(--app-text)",
-            boxShadow: "0 18px 40px -10px rgba(0, 0, 0, 0.18)",
-            overflow: "hidden",
-            maxWidth: "740px",
-          }}
-        >
-          {/* Main Content: Left Presets + Right Calendars */}
-          <div className="d-flex flex-column flex-md-row">
-            {/* Sidebar Presets */}
+      {/* Center Screen Modal Dialog (MUNCIUL DI TENGAH LAYAR & ANTI TERPOTONG) */}
+      {mounted && isOpen && typeof document !== "undefined"
+        ? createPortal(
             <div
-              className="d-flex flex-row flex-md-column border-bottom border-md-bottom-0 border-md-end p-2 p-md-3 overflow-auto"
+              className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3"
               style={{
-                width: "100%",
-                maxWidth: "200px",
-                borderColor: "var(--app-border)",
-                backgroundColor: "var(--app-surface-subtle)",
-                flexShrink: 0,
+                zIndex: 10999,
+                backgroundColor: "rgba(0, 0, 0, 0.65)",
+                backdropFilter: "blur(4px)",
+              }}
+              onClick={(e) => {
+                if (modalBoxRef.current && !modalBoxRef.current.contains(e.target as Node)) {
+                  handleCancel();
+                }
               }}
             >
-              {PRESETS.map((p) => {
-                const isActive = activePreset === p.key;
-                return (
-                  <button
-                    key={p.key}
-                    type="button"
-                    className="btn btn-sm text-start text-nowrap rounded-3 py-2 px-3 mb-1 border-0 fw-medium transition-all"
-                    style={{
-                      backgroundColor: isActive ? "var(--app-primary)" : "transparent",
-                      color: isActive ? "#ffffff" : "var(--app-text)",
-                      fontSize: "13px",
-                    }}
-                    onClick={() => applyPreset(p.key)}
-                  >
-                    {p.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Right Calendar Area */}
-            <div className="p-3 p-md-4 flex-grow-1">
-              {/* Selected Date Header */}
-              <div className="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom" style={{ borderColor: "var(--app-border)" }}>
-                <span className="text-secondary" style={{ fontSize: "13px" }}>
-                  Selected Date:
-                </span>
-                <span className="fw-bold" style={{ fontSize: "14px", color: "var(--app-text)" }}>
-                  {headerSelectedText}
-                </span>
-              </div>
-
-              {/* Calendars Grid (Dual Months on desktop, single/stacked on mobile) */}
-              <div className="d-flex flex-column flex-lg-row gap-4 align-items-start">
-                {/* Month 1 */}
-                {renderCalendarMonth(
-                  viewYear1,
-                  viewMonth1,
-                  prevMonth1,
-                  nextMonth1,
-                  (y) => setViewYear1(y),
-                  (m) => setViewMonth1(m)
-                )}
-
-                {/* Vertical Divider for Desktop */}
+              <div
+                ref={modalBoxRef}
+                className="shadow-lg border rounded-4 animate__animated animate__fadeInUp animate__faster"
+                style={{
+                  width: "min(740px, 96vw)",
+                  backgroundColor: "var(--app-surface)",
+                  borderColor: "var(--app-border)",
+                  color: "var(--app-text-primary)",
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+                  overflow: "hidden",
+                  maxHeight: "92vh",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Top Header Bar with Close Button */}
                 <div
-                  className="d-none d-lg-block align-self-stretch border-start"
+                  className="d-flex align-items-center justify-content-between px-3 px-md-4 py-3 border-bottom"
                   style={{ borderColor: "var(--app-border)" }}
-                />
+                >
+                  <div className="d-flex align-items-center gap-2">
+                    <CalendarIcon size={18} style={{ color: "var(--app-primary)" }} />
+                    <span className="fw-semibold" style={{ fontSize: "15px", color: "var(--app-text-primary)" }}>
+                      Pilih Rentang Tanggal
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-link p-1 text-decoration-none border-0"
+                    style={{ color: "var(--app-text-muted)" }}
+                    onClick={handleCancel}
+                    title="Tutup kalender"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
 
-                {/* Month 2 */}
-                <div className="d-none d-md-block flex-grow-1" style={{ minWidth: "260px" }}>
-                  {renderCalendarMonth(
-                    viewYear2,
-                    viewMonth2,
-                    () => {
-                      if (viewMonth1 === 0) {
-                        setViewMonth1(11);
-                        setViewYear1(viewYear1 - 1);
-                      } else {
-                        setViewMonth1(viewMonth1 - 1);
-                      }
-                    },
-                    () => {
-                      if (viewMonth1 === 11) {
-                        setViewMonth1(0);
-                        setViewYear1(viewYear1 + 1);
-                      } else {
-                        setViewMonth1(viewMonth1 + 1);
-                      }
-                    },
-                    (y) => {
-                      setViewYear1(viewMonth1 === 11 ? y - 1 : y);
-                    },
-                    (m) => {
-                      setViewMonth1(m === 0 ? 11 : m - 1);
-                    }
-                  )}
+                {/* Main Content: Left Presets + Right Calendars */}
+                <div className="d-flex flex-column flex-md-row flex-grow-1 overflow-auto">
+                  {/* Sidebar Presets */}
+                  <div
+                    className="d-flex flex-row flex-md-column border-bottom border-md-bottom-0 border-md-end p-2 p-md-3 overflow-auto"
+                    style={{
+                      width: "100%",
+                      maxWidth: "200px",
+                      borderColor: "var(--app-border)",
+                      backgroundColor: "var(--app-surface-subtle)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {PRESETS.map((p) => {
+                      const isActive = activePreset === p.key;
+                      return (
+                        <button
+                          key={p.key}
+                          type="button"
+                          className="btn btn-sm text-start text-nowrap rounded-3 py-2 px-3 mb-1 border-0 fw-medium transition-all"
+                          style={{
+                            backgroundColor: isActive ? "var(--app-primary)" : "transparent",
+                            color: isActive ? "#ffffff" : "var(--app-text-primary)",
+                            fontSize: "13px",
+                          }}
+                          onClick={() => applyPreset(p.key)}
+                        >
+                          {p.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Right Calendar Area */}
+                  <div className="p-3 p-md-4 flex-grow-1 overflow-auto">
+                    {/* Selected Date Header */}
+                    <div
+                      className="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom"
+                      style={{ borderColor: "var(--app-border)" }}
+                    >
+                      <span style={{ fontSize: "13px", color: "var(--app-text-secondary)" }}>
+                        Selected Date:
+                      </span>
+                      <span className="fw-bold" style={{ fontSize: "14px", color: "var(--app-text-primary)" }}>
+                        {headerSelectedText}
+                      </span>
+                    </div>
+
+                    {/* Calendars Grid (Dual Months on desktop, single on mobile) */}
+                    <div className="d-flex flex-column flex-lg-row gap-4 align-items-start">
+                      {/* Month 1 */}
+                      {renderCalendarMonth(
+                        viewYear1,
+                        viewMonth1,
+                        prevMonth1,
+                        nextMonth1,
+                        (y) => setViewYear1(y),
+                        (m) => setViewMonth1(m)
+                      )}
+
+                      {/* Vertical Divider for Desktop */}
+                      <div
+                        className="d-none d-lg-block align-self-stretch border-start"
+                        style={{ borderColor: "var(--app-border)" }}
+                      />
+
+                      {/* Month 2 */}
+                      <div className="d-none d-md-block flex-grow-1" style={{ minWidth: "260px" }}>
+                        {renderCalendarMonth(
+                          viewYear2,
+                          viewMonth2,
+                          () => {
+                            if (viewMonth1 === 0) {
+                              setViewMonth1(11);
+                              setViewYear1(viewYear1 - 1);
+                            } else {
+                              setViewMonth1(viewMonth1 - 1);
+                            }
+                          },
+                          () => {
+                            if (viewMonth1 === 11) {
+                              setViewMonth1(0);
+                              setViewYear1(viewYear1 + 1);
+                            } else {
+                              setViewMonth1(viewMonth1 + 1);
+                            }
+                          },
+                          (y) => {
+                            setViewYear1(viewMonth1 === 11 ? y - 1 : y);
+                          },
+                          (m) => {
+                            setViewMonth1(m === 0 ? 11 : m - 1);
+                          }
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Actions: Reset (left), Cancel & Save (right) */}
+                <div
+                  className="d-flex align-items-center justify-content-between p-3 border-top"
+                  style={{
+                    borderColor: "var(--app-border)",
+                    backgroundColor: "var(--app-surface)",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link text-decoration-none fw-semibold p-0 border-0"
+                    style={{ color: "var(--app-primary)", fontSize: "13.5px" }}
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+
+                  <div className="d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-secondary px-3 py-1.5 fw-medium rounded-3"
+                      style={{
+                        fontSize: "13px",
+                        borderColor: "var(--app-border)",
+                        color: "var(--app-text-primary)",
+                      }}
+                      onClick={handleCancel}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm text-white px-4 py-1.5 fw-semibold rounded-3 border-0"
+                      style={{
+                        backgroundColor: "var(--app-primary)",
+                        fontSize: "13px",
+                        boxShadow: "0 2px 8px rgba(79, 70, 229, 0.4)",
+                      }}
+                      onClick={handleSave}
+                    >
+                      Terapkan
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Footer Actions: Reset (left), Cancel & Save (right) */}
-          <div
-            className="d-flex align-items-center justify-content-between p-3 border-top"
-            style={{
-              borderColor: "var(--app-border)",
-              backgroundColor: "var(--app-surface)",
-            }}
-          >
-            <button
-              type="button"
-              className="btn btn-link text-decoration-none fw-semibold p-0"
-              style={{ color: "var(--app-primary)", fontSize: "13.5px" }}
-              onClick={handleReset}
-            >
-              Reset
-            </button>
-
-            <div className="d-flex align-items-center gap-2">
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary px-3 py-1 fw-medium rounded-3"
-                style={{ fontSize: "13px" }}
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm text-white px-4 py-1 fw-semibold rounded-3"
-                style={{
-                  backgroundColor: "var(--app-primary)",
-                  borderColor: "var(--app-primary)",
-                  fontSize: "13px",
-                  boxShadow: "0 2px 6px rgba(108, 92, 231, 0.3)",
-                }}
-                onClick={handleSave}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 };

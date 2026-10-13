@@ -59,3 +59,6 @@ export type { AppPageHeaderProps } from "./layout/AppPageHeader";
 
 export { default as AppFormSection } from "./layout/AppFormSection";
 export type { AppFormSectionProps } from "./layout/AppFormSection";
+
+export { default as AssetValuationLineChart } from "./charts/AssetValuationLineChart";
+export type { ValuationTrendPoint } from "./charts/AssetValuationLineChart";

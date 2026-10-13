@@ -311,7 +311,7 @@ export default function SuppliersPage() {
 
       {/* Filter & Search Bar */}
       <AppSearchFilterBar
-        searchPlaceholder="Cari nama supplier, telepon, email, alamat (Tekan Enter)..."
+        searchPlaceholder="Cari nama supplier, telepon, email, alamat..."
         searchValue={search}
         onSearchSubmit={(val) => {
           setSearch(val);

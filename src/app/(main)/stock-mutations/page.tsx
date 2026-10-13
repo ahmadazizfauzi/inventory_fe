@@ -357,7 +357,7 @@ export default function StockMutationsPage() {
           setSearch(val);
           loadMutations(1, val);
         }}
-        searchPlaceholder="Cari produk, SKU, operator, supplier (Tekan Enter)..."
+        searchPlaceholder="Cari produk, SKU, operator..."
         onFilterClick={handleOpenFilterDialog}
         isFilterActive={isFilterActive}
         filterButtonText="Filter"

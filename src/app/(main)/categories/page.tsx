@@ -281,7 +281,7 @@ export default function CategoriesPage() {
           setCurrentPage(1);
           loadCategories(val);
         }}
-        searchPlaceholder="Cari nama atau deskripsi kategori (Tekan Enter)..."
+        searchPlaceholder="Cari nama atau deskripsi kategori..."
       />
 
       {/* Main Table */}

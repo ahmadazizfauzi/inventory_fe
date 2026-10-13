@@ -230,7 +230,7 @@ export default function UsersPage() {
           setCurrentPage(1);
           fetchUsers(1, val);
         }}
-        searchPlaceholder="Cari nama atau email pengguna (Tekan Enter)..."
+        searchPlaceholder="Cari nama atau email pengguna..."
       />
 
       {/* Main Content Card with Table and Pagination */}

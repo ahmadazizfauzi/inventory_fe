@@ -427,7 +427,7 @@ export default function ProductsPage() {
           setSearch(val);
           loadProducts(1, val);
         }}
-        searchPlaceholder="Cari nama atau SKU produk (Tekan Enter)..."
+        searchPlaceholder="Cari nama atau SKU produk..."
         onFilterClick={handleOpenFilterDialog}
         isFilterActive={isFilterActive}
         filterButtonText="Filter"
