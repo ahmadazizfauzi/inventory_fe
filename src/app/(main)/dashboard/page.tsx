@@ -52,7 +52,7 @@ export default function DashboardPage() {
       {/* Page Header */}
       <AppPageHeader
         title="Dashboard"
-        subtitle="Ringkasan valuasi aset inventaris dan monitoring stok gudang secara real-time."
+        subtitle="Ringkasan valuasi aset inventaris dan monitoring stok gudang."
         actions={
           <AppButton
             variant="outlineSecondary"

@@ -233,6 +233,16 @@ export default function ProductsPage() {
       ),
     },
     {
+      key: "created_at",
+      header: "Tanggal Dibuat",
+      align: "center",
+      render: (row) => (
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
+          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
+        </AppTypography>
+      ),
+    },
+    {
       key: "sku",
       header: "SKU",
       render: (row) => (

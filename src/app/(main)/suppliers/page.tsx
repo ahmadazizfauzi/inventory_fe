@@ -149,6 +149,16 @@ export default function SuppliersPage() {
       ),
     },
     {
+      key: "created_at",
+      header: "Tanggal Dibuat",
+      align: "center",
+      render: (row) => (
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
+          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
+        </AppTypography>
+      ),
+    },
+    {
       key: "name",
       header: "Nama Supplier",
       render: (row) => (
@@ -213,16 +223,6 @@ export default function SuppliersPage() {
             -
           </AppTypography>
         )
-      ),
-    },
-    {
-      key: "created_at",
-      header: "Tanggal Dibuat",
-      align: "center",
-      render: (row) => (
-        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
-        </AppTypography>
       ),
     },
     ...(canManageSuppliers

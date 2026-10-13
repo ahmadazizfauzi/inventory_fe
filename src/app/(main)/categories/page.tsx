@@ -148,6 +148,16 @@ export default function CategoriesPage() {
       ),
     },
     {
+      key: "created_at",
+      header: "Tanggal Dibuat",
+      align: "center",
+      render: (row) => (
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
+          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
+        </AppTypography>
+      ),
+    },
+    {
       key: "name",
       header: "Nama Kategori",
       render: (row) => (
@@ -184,16 +194,6 @@ export default function CategoriesPage() {
         <AppBadge variant="softSecondary">
           {row.products_count ?? 0} Produk
         </AppBadge>
-      ),
-    },
-    {
-      key: "created_at",
-      header: "Tanggal Dibuat",
-      align: "center",
-      render: (row) => (
-        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
-        </AppTypography>
       ),
     },
     ...(canManageCategories

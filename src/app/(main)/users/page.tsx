@@ -89,6 +89,16 @@ export default function UsersPage() {
       ),
     },
     {
+      key: "created_at",
+      header: "Tanggal Registrasi",
+      align: "center",
+      render: (row) => (
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
+          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
+        </AppTypography>
+      ),
+    },
+    {
       key: "name",
       header: "Nama Lengkap",
       render: (row) => (
@@ -127,16 +137,6 @@ export default function UsersPage() {
           </AppBadge>
         );
       },
-    },
-    {
-      key: "created_at",
-      header: "Tanggal Registrasi",
-      align: "center",
-      render: (row) => (
-        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
-        </AppTypography>
-      ),
     },
     {
       key: "actions",
