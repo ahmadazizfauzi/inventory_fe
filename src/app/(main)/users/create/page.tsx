@@ -46,6 +46,15 @@ export default function CreateUserPage() {
     setLoading(true);
     const res = await createUser(formData);
     if (res.status) {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          "flash_alert",
+          JSON.stringify({
+            variant: "success",
+            message: res.message || "Pengguna baru berhasil ditambahkan",
+          })
+        );
+      }
       router.push("/users");
     } else {
       if (res.errors) {

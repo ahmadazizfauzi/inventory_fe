@@ -52,6 +52,21 @@ export default function UsersPage() {
     setLoading(false);
   }, []);
 
+  // Flash alert detection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const flash = sessionStorage.getItem("flash_alert");
+      if (flash) {
+        try {
+          setAlert(JSON.parse(flash));
+        } catch {
+          // ignore
+        }
+        sessionStorage.removeItem("flash_alert");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers(currentPage);
   }, [fetchUsers, currentPage]);
