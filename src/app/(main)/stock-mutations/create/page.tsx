@@ -101,7 +101,7 @@ export default function CreateStockMutationPage() {
 
     Promise.all([
       getProducts({ per_page: 100 }),
-      getSuppliers(),
+      getSuppliers({ all: true }),
     ]).then(([prodRes, supRes]) => {
       if (prodRes.status && prodRes.data) {
         setProducts(prodRes.data);

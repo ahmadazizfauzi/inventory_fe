@@ -33,8 +33,12 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<ICategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    total_pages: 1,
+    total: 0,
+    per_page: 10,
+  });
 
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
@@ -81,23 +85,29 @@ export default function CategoriesPage() {
   const canManageCategories =
     currentUser?.role === "superadmin" || currentUser?.role === "admin";
 
-  const loadCategories = useCallback(async (searchParam?: string) => {
-    setLoading(true);
-    const effectiveSearch = searchParam !== undefined ? searchParam : search;
-    const res = await getCategories({ search: effectiveSearch });
-    if (res.status) {
-      setCategories(res.data);
-    } else {
-      setAlert({
-        variant: "danger",
-        message: res.message || "Gagal memuat daftar kategori",
-      });
-    }
-    setLoading(false);
-  }, [search]);
+  const loadCategories = useCallback(
+    async (page = 1, searchParam?: string) => {
+      setLoading(true);
+      const effectiveSearch = searchParam !== undefined ? searchParam : search;
+      const res = await getCategories({ page, per_page: 10, search: effectiveSearch });
+      if (res.status) {
+        setCategories(res.data);
+        if (res.pagination) {
+          setPagination(res.pagination);
+        }
+      } else {
+        setAlert({
+          variant: "danger",
+          message: res.message || "Gagal memuat daftar kategori",
+        });
+      }
+      setLoading(false);
+    },
+    [search]
+  );
 
   useEffect(() => {
-    loadCategories();
+    loadCategories(1);
   }, []);
 
   const handleOpenDeleteModal = (cat: ICategoryItem) => {
@@ -118,7 +128,7 @@ export default function CategoriesPage() {
         variant: "success",
         message: res.message || "Kategori berhasil dihapus",
       });
-      loadCategories();
+      loadCategories(pagination.current_page);
     } else {
       setAlert({
         variant: "danger",
@@ -128,15 +138,6 @@ export default function CategoriesPage() {
     }
   };
 
-  const filteredCategories = categories.filter((c) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return (
-      c.name.toLowerCase().includes(q) ||
-      (c.description && c.description.toLowerCase().includes(q))
-    );
-  });
-
   const columns: ColumnDef<ICategoryItem>[] = [
     {
       key: "no",
@@ -145,7 +146,7 @@ export default function CategoriesPage() {
       align: "center",
       render: (_, index) => (
         <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {(currentPage - 1) * itemsPerPage + index + 1}
+          {(pagination.current_page - 1) * pagination.per_page + index + 1}
         </AppTypography>
       ),
     },
@@ -229,12 +230,6 @@ export default function CategoriesPage() {
       : []),
   ];
 
-  const totalPages = Math.max(1, Math.ceil(filteredCategories.length / itemsPerPage));
-  const paginatedCategories = filteredCategories.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   return (
     <div className="container-fluid p-0">
       {/* Page Header */}
@@ -278,8 +273,7 @@ export default function CategoriesPage() {
         searchValue={search}
         onSearchSubmit={(val) => {
           setSearch(val);
-          setCurrentPage(1);
-          loadCategories(val);
+          loadCategories(1, val);
         }}
         searchPlaceholder="Cari nama atau deskripsi kategori..."
       />
@@ -289,7 +283,7 @@ export default function CategoriesPage() {
         <AppCardBody className="p-0">
           <AppTable<ICategoryItem>
             columns={columns}
-            data={paginatedCategories}
+            data={categories}
             keyExtractor={(row) => row.id}
             isLoading={loading}
             emptyMessage="Belum ada data kategori barang."
@@ -300,11 +294,11 @@ export default function CategoriesPage() {
             style={{ borderColor: "var(--app-border)" }}
           >
             <AppPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={filteredCategories.length}
-              itemsPerPage={itemsPerPage}
-              onPageChange={(p) => setCurrentPage(p)}
+              currentPage={pagination.current_page}
+              totalPages={pagination.total_pages}
+              totalItems={pagination.total}
+              itemsPerPage={pagination.per_page}
+              onPageChange={(p) => loadCategories(p)}
             />
           </div>
         </AppCardBody>

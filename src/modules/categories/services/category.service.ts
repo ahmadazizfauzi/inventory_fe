@@ -6,9 +6,19 @@ import {
   IUpdateCategoryPayload,
 } from "../types/category.types";
 
-export const getCategories = async (params?: { search?: string; start_date?: string; end_date?: string }) => {
+export const getCategories = async (params?: {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  start_date?: string;
+  end_date?: string;
+  all?: boolean;
+}) => {
   try {
-    const cleanParams: Record<string, string> = {};
+    const cleanParams: Record<string, any> = {};
+    if (params?.page) cleanParams.page = params.page;
+    if (params?.per_page) cleanParams.per_page = params.per_page;
+    if (params?.all) cleanParams.all = true;
     if (params?.search && params.search.trim() !== "") cleanParams.search = params.search.trim();
     if (params?.start_date) cleanParams.start_date = params.start_date;
     if (params?.end_date) cleanParams.end_date = params.end_date;
@@ -17,6 +27,12 @@ export const getCategories = async (params?: { search?: string; start_date?: str
     return {
       status: true,
       data: (res.data.data || []) as ICategoryItem[],
+      pagination: res.data.pagination || {
+        current_page: 1,
+        total_pages: 1,
+        total: (res.data.data || []).length,
+        per_page: 10,
+      },
       message: res.data.message || "Data kategori berhasil dimuat",
     };
   } catch (err: unknown) {
@@ -24,7 +40,12 @@ export const getCategories = async (params?: { search?: string; start_date?: str
     if (err instanceof AxiosError && err.response?.data?.message) {
       message = err.response.data.message;
     }
-    return { status: false, message, data: [] as ICategoryItem[] };
+    return {
+      status: false,
+      message,
+      data: [] as ICategoryItem[],
+      pagination: { current_page: 1, total_pages: 1, total: 0, per_page: 10 },
+    };
   }
 };
 

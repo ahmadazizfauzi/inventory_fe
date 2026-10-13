@@ -32,8 +32,12 @@ export default function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<ISupplierItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    total_pages: 1,
+    total: 0,
+    per_page: 10,
+  });
 
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
@@ -80,23 +84,29 @@ export default function SuppliersPage() {
   const canManageSuppliers =
     currentUser?.role === "superadmin" || currentUser?.role === "admin";
 
-  const loadSuppliers = useCallback(async (searchParam?: string) => {
-    setLoading(true);
-    const effectiveSearch = searchParam !== undefined ? searchParam : search;
-    const res = await getSuppliers({ search: effectiveSearch });
-    if (res.status) {
-      setSuppliers(res.data);
-    } else {
-      setAlert({
-        variant: "danger",
-        message: res.message || "Gagal memuat daftar supplier",
-      });
-    }
-    setLoading(false);
-  }, [search]);
+  const loadSuppliers = useCallback(
+    async (page = 1, searchParam?: string) => {
+      setLoading(true);
+      const effectiveSearch = searchParam !== undefined ? searchParam : search;
+      const res = await getSuppliers({ page, per_page: 10, search: effectiveSearch });
+      if (res.status) {
+        setSuppliers(res.data);
+        if (res.pagination) {
+          setPagination(res.pagination);
+        }
+      } else {
+        setAlert({
+          variant: "danger",
+          message: res.message || "Gagal memuat daftar supplier",
+        });
+      }
+      setLoading(false);
+    },
+    [search]
+  );
 
   useEffect(() => {
-    loadSuppliers();
+    loadSuppliers(1);
   }, []);
 
   const handleOpenDeleteModal = (sup: ISupplierItem) => {
@@ -117,7 +127,7 @@ export default function SuppliersPage() {
         variant: "success",
         message: res.message || "Supplier berhasil dihapus",
       });
-      loadSuppliers();
+      loadSuppliers(pagination.current_page);
     } else {
       setAlert({
         variant: "danger",
@@ -127,17 +137,6 @@ export default function SuppliersPage() {
     }
   };
 
-  const filteredSuppliers = suppliers.filter((s) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return (
-      s.name.toLowerCase().includes(q) ||
-      (s.phone && s.phone.toLowerCase().includes(q)) ||
-      (s.email && s.email.toLowerCase().includes(q)) ||
-      (s.address && s.address.toLowerCase().includes(q))
-    );
-  });
-
   const columns: ColumnDef<ISupplierItem>[] = [
     {
       key: "no",
@@ -146,7 +145,7 @@ export default function SuppliersPage() {
       align: "center",
       render: (_, index) => (
         <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {(currentPage - 1) * itemsPerPage + index + 1}
+          {(pagination.current_page - 1) * pagination.per_page + index + 1}
         </AppTypography>
       ),
     },
@@ -315,8 +314,7 @@ export default function SuppliersPage() {
         searchValue={search}
         onSearchSubmit={(val) => {
           setSearch(val);
-          setCurrentPage(1);
-          loadSuppliers(val);
+          loadSuppliers(1, val);
         }}
       />
 
@@ -325,7 +323,7 @@ export default function SuppliersPage() {
         <AppCardBody className="p-0">
           <AppTable<ISupplierItem>
             columns={columns}
-            data={filteredSuppliers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
+            data={suppliers}
             isLoading={loading}
             emptyMessage={
               search
@@ -340,11 +338,11 @@ export default function SuppliersPage() {
             style={{ borderColor: "var(--app-border)" }}
           >
             <AppPagination
-              currentPage={currentPage}
-              totalPages={Math.max(1, Math.ceil(filteredSuppliers.length / itemsPerPage))}
-              totalItems={filteredSuppliers.length}
-              itemsPerPage={itemsPerPage}
-              onPageChange={(p) => setCurrentPage(p)}
+              currentPage={pagination.current_page}
+              totalPages={pagination.total_pages}
+              totalItems={pagination.total}
+              itemsPerPage={pagination.per_page}
+              onPageChange={(p) => loadSuppliers(p)}
             />
           </div>
         </AppCardBody>

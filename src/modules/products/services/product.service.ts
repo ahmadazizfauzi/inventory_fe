@@ -69,7 +69,7 @@ export const getProducts = async (
 
 export const getCategories = async (): Promise<ICategory[]> => {
   try {
-    const response = await axiosInstance.get("/categories");
+    const response = await axiosInstance.get("/categories", { params: { all: true } });
     return response.data.data || [];
   } catch {
     return [];
