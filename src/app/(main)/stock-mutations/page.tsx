@@ -15,6 +15,8 @@ import {
   AppDropdown,
   AppPagination,
   AppTypography,
+  AppDateRangePicker,
+  DateRangeValue,
   ColumnDef,
 } from "@/components";
 import { getStockMutations } from "@/modules/stock-mutations/services/mutation.service";
@@ -39,10 +41,12 @@ export default function StockMutationsPage() {
   const [search, setSearch] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [dateRange, setDateRange] = useState<DateRangeValue>({ startDate: null, endDate: null });
 
   // Temporary state for filter modal
   const [tempProductId, setTempProductId] = useState<string>("all");
   const [tempType, setTempType] = useState<string>("all");
+  const [tempDateRange, setTempDateRange] = useState<DateRangeValue>({ startDate: null, endDate: null });
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Products for filter dropdown
@@ -86,7 +90,13 @@ export default function StockMutationsPage() {
   const loadMutations = useCallback(
     async (page = 1) => {
       setLoading(true);
-      const res = await getStockMutations(page, 10, selectedProductId);
+      const res = await getStockMutations(
+        page,
+        10,
+        selectedProductId,
+        dateRange.startDate || undefined,
+        dateRange.endDate || undefined
+      );
       if (res.status) {
         setMutations(res.data);
         setPagination(res.pagination);
@@ -98,7 +108,7 @@ export default function StockMutationsPage() {
       }
       setLoading(false);
     },
-    [selectedProductId]
+    [selectedProductId, dateRange]
   );
 
   useEffect(() => {
@@ -108,25 +118,33 @@ export default function StockMutationsPage() {
   const handleOpenFilterDialog = () => {
     setTempProductId(selectedProductId);
     setTempType(selectedType);
+    setTempDateRange(dateRange);
     setIsFilterModalOpen(true);
   };
 
   const handleApplyFilters = () => {
     setSelectedProductId(tempProductId);
     setSelectedType(tempType);
+    setDateRange(tempDateRange);
     setIsFilterModalOpen(false);
   };
 
   const handleResetFilters = () => {
     setSelectedProductId("all");
     setSelectedType("all");
+    setDateRange({ startDate: null, endDate: null });
     setTempProductId("all");
     setTempType("all");
+    setTempDateRange({ startDate: null, endDate: null });
     setSearch("");
     setIsFilterModalOpen(false);
   };
 
-  const isFilterActive = selectedProductId !== "all" || selectedType !== "all";
+  const isFilterActive =
+    selectedProductId !== "all" ||
+    selectedType !== "all" ||
+    dateRange.startDate !== null ||
+    dateRange.endDate !== null;
 
   // Client-side search and type filtering on the current page's records
   const filteredMutations = mutations.filter((item) => {
@@ -458,6 +476,17 @@ export default function StockMutationsPage() {
               ]}
               value={tempType}
               onChange={(val) => setTempType(String(val))}
+            />
+          </div>
+
+          <div>
+            <AppTypography variant="label" className="mb-1 d-block">
+              Rentang Tanggal Mutasi
+            </AppTypography>
+            <AppDateRangePicker
+              value={tempDateRange}
+              onChange={(val) => setTempDateRange(val)}
+              placeholder="Pilih rentang tanggal mutasi..."
             />
           </div>
         </div>

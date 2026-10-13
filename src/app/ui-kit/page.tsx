@@ -31,13 +31,14 @@ import ButtonsSection from "@/app/showcase-sections/ButtonsSection";
 import CardsSection from "@/app/showcase-sections/CardsSection";
 import BadgesSection from "@/app/showcase-sections/BadgesSection";
 import InputsSection from "@/app/showcase-sections/InputsSection";
+import DateRangePickerSection from "@/app/showcase-sections/DateRangePickerSection";
 import PageHeaderSection from "@/app/showcase-sections/PageHeaderSection";
 import TablesSection from "@/app/showcase-sections/TablesSection";
 import FeedbackSection from "@/app/showcase-sections/FeedbackSection";
 import SidebarSection from "@/app/showcase-sections/SidebarSection";
 import SkeletonSection from "@/app/showcase-sections/SkeletonSection";
 import PaginationSection from "@/app/showcase-sections/PaginationSection";
-import { LayoutDashboard, Compass, ListOrdered } from "lucide-react";
+import { LayoutDashboard, Compass, ListOrdered, Calendar } from "lucide-react";
 
 interface NavItem {
   id: string;
@@ -52,6 +53,7 @@ const navItems: NavItem[] = [
   { id: "cards", label: "AppStatCard.tsx & AppCard", icon: <BarChart3 size={16} /> },
   { id: "badges", label: "AppBadge.tsx", icon: <Tag size={16} /> },
   { id: "inputs", label: "AppInput.tsx & Dropdown", icon: <TextCursorInput size={16} /> },
+  { id: "date-range-picker", label: "AppDateRangePicker.tsx", icon: <Calendar size={16} /> },
   { id: "page-header", label: "AppPageHeader.tsx", icon: <Compass size={16} /> },
   { id: "tables", label: "AppTable.tsx", icon: <Table size={16} /> },
   { id: "pagination", label: "AppPagination.tsx", icon: <ListOrdered size={16} /> },
@@ -345,6 +347,7 @@ export default function UIKitPage() {
           <CardsSection />
           <BadgesSection />
           <InputsSection />
+          <DateRangePickerSection />
           <PageHeaderSection />
           <TablesSection />
           <PaginationSection />

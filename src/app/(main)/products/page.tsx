@@ -17,6 +17,8 @@ import {
   AppPagination,
   AppTypography,
   AppSearchFilterBar,
+  AppDateRangePicker,
+  DateRangeValue,
   ColumnDef,
 } from "@/components";
 import {
@@ -63,6 +65,7 @@ export default function ProductsPage() {
   const [stockStatus, setStockStatus] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [dateRange, setDateRange] = useState<DateRangeValue>({ startDate: null, endDate: null });
 
   // Filter Modal Dialog State
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -72,6 +75,7 @@ export default function ProductsPage() {
   const [tempStockStatus, setTempStockStatus] = useState<string>("all");
   const [tempSortBy, setTempSortBy] = useState<string>("created_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
+  const [tempDateRange, setTempDateRange] = useState<DateRangeValue>({ startDate: null, endDate: null });
 
   // Feedback Alert State
   const [alert, setAlert] = useState<{
@@ -120,7 +124,13 @@ export default function ProductsPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Check if any non-default filter is active
-  const isFilterActive = selectedCategory !== "all" || stockStatus !== "all" || sortBy !== "created_at" || sortOrder !== "desc";
+  const isFilterActive =
+    selectedCategory !== "all" ||
+    stockStatus !== "all" ||
+    sortBy !== "created_at" ||
+    sortOrder !== "desc" ||
+    dateRange.startDate !== null ||
+    dateRange.endDate !== null;
 
   // Fetch Categories
   useEffect(() => {
@@ -141,6 +151,8 @@ export default function ProductsPage() {
         stock_status: stockStatus as any,
         sort_by: sortBy as any,
         sort_order: sortOrder,
+        start_date: dateRange.startDate || undefined,
+        end_date: dateRange.endDate || undefined,
       });
 
       if (res.status) {
@@ -154,7 +166,7 @@ export default function ProductsPage() {
       }
       setLoading(false);
     },
-    [pagination.per_page, search, selectedCategory, stockStatus, sortBy, sortOrder]
+    [pagination.per_page, search, selectedCategory, stockStatus, sortBy, sortOrder, dateRange]
   );
 
   // Trigger load when search or active filters change
@@ -163,7 +175,7 @@ export default function ProductsPage() {
       loadProducts(1);
     }, search ? 300 : 0);
     return () => clearTimeout(handler);
-  }, [search, selectedCategory, stockStatus, sortBy, sortOrder, loadProducts]);
+  }, [search, selectedCategory, stockStatus, sortBy, sortOrder, dateRange, loadProducts]);
 
   // Open Filter Dialog
   const handleOpenFilterDialog = () => {
@@ -171,6 +183,7 @@ export default function ProductsPage() {
     setTempStockStatus(stockStatus);
     setTempSortBy(sortBy);
     setTempSortOrder(sortOrder);
+    setTempDateRange(dateRange);
     setIsFilterModalOpen(true);
   };
 
@@ -180,6 +193,7 @@ export default function ProductsPage() {
     setStockStatus(tempStockStatus);
     setSortBy(tempSortBy);
     setSortOrder(tempSortOrder);
+    setDateRange(tempDateRange);
     setIsFilterModalOpen(false);
   };
 
@@ -190,10 +204,12 @@ export default function ProductsPage() {
     setStockStatus("all");
     setSortBy("created_at");
     setSortOrder("desc");
+    setDateRange({ startDate: null, endDate: null });
     setTempCategory("all");
     setTempStockStatus("all");
     setTempSortBy("created_at");
     setTempSortOrder("desc");
+    setTempDateRange({ startDate: null, endDate: null });
   };
 
   // Open Delete Modal
@@ -538,6 +554,20 @@ export default function ProductsPage() {
                 { value: "selling_price:desc", label: "Harga Tertinggi" },
                 { value: "selling_price:asc", label: "Harga Terendah" },
               ]}
+            />
+          </div>
+
+          {/* Filter Rentang Tanggal Dibuat */}
+          <div>
+            <label className="form-label mb-1">
+              <AppTypography variant="label" tone="secondary">
+                Rentang Tanggal Dibuat (Created At)
+              </AppTypography>
+            </label>
+            <AppDateRangePicker
+              value={tempDateRange}
+              onChange={(val) => setTempDateRange(val)}
+              placeholder="Pilih rentang tanggal produk..."
             />
           </div>
         </div>

@@ -9,13 +9,17 @@ import {
 export const getStockMutations = async (
   page = 1,
   perPage = 10,
-  productId?: number | string
+  productId?: number | string,
+  startDate?: string,
+  endDate?: string
 ): Promise<IGetMutationsResult> => {
   try {
     const params: Record<string, any> = { page, per_page: perPage };
     if (productId && productId !== "all") {
       params.product_id = productId;
     }
+    if (startDate) params.start_date = startDate;
+    if (endDate) params.end_date = endDate;
 
     const response = await axiosInstance.get("/stock-mutations", { params });
     const responseData = response.data;

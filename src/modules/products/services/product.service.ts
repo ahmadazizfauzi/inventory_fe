@@ -31,6 +31,8 @@ export const getProducts = async (
     }
     if (params?.sort_by) cleanParams.sort_by = params.sort_by;
     if (params?.sort_order) cleanParams.sort_order = params.sort_order;
+    if (params?.start_date) cleanParams.start_date = params.start_date;
+    if (params?.end_date) cleanParams.end_date = params.end_date;
 
     const response = await axiosInstance.get("/products", { params: cleanParams });
     const responseData = response.data;

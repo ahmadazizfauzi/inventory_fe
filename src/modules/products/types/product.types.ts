@@ -39,6 +39,8 @@ export interface IProductQueryParams {
   stock_status?: "all" | "in_stock" | "low_stock" | "out_of_stock";
   sort_by?: "created_at" | "name" | "sku" | "stock" | "purchase_price" | "selling_price";
   sort_order?: "asc" | "desc";
+  start_date?: string;
+  end_date?: string;
 }
 
 export interface IProductPayload {

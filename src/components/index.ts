@@ -30,6 +30,9 @@ export type { AppTextareaProps } from "./inputs/AppTextarea";
 export { default as AppSearchFilterBar } from "./inputs/AppSearchFilterBar";
 export type { AppSearchFilterBarProps } from "./inputs/AppSearchFilterBar";
 
+export { default as AppDateRangePicker } from "./inputs/AppDateRangePicker";
+export type { AppDateRangePickerProps, DateRangeValue } from "./inputs/AppDateRangePicker";
+
 export { default as AppTable } from "./tables/AppTable";
 export type { AppTableProps, ColumnDef, ColumnDef as TableColumn } from "./tables/AppTable";
 
