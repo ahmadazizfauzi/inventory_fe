@@ -143,9 +143,9 @@ export default function SuppliersPage() {
       width: 60,
       align: "center",
       render: (_, index) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {(currentPage - 1) * itemsPerPage + index + 1}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -162,9 +162,9 @@ export default function SuppliersPage() {
           >
             <Truck size={14} />
           </div>
-          <span className="fw-semibold text-truncate" style={{ color: "var(--app-text)" }}>
+          <AppTypography variant="body" weight="semibold" className="text-truncate m-0">
             {row.name}
-          </span>
+          </AppTypography>
         </div>
       ),
     },
@@ -174,18 +174,26 @@ export default function SuppliersPage() {
       render: (row) => (
         <div className="d-flex flex-column gap-1">
           {row.phone ? (
-            <div className="d-flex align-items-center gap-1 text-muted small">
-              <Phone size={12} />
-              <span className="font-mono">{row.phone}</span>
+            <div className="d-flex align-items-center gap-1">
+              <Phone size={12} className="text-muted" />
+              <AppTypography variant="meta" tone="muted" className="m-0">
+                {row.phone}
+              </AppTypography>
             </div>
           ) : null}
           {row.email ? (
-            <div className="d-flex align-items-center gap-1 text-muted small">
-              <Mail size={12} />
-              <span>{row.email}</span>
+            <div className="d-flex align-items-center gap-1">
+              <Mail size={12} className="text-muted" />
+              <AppTypography variant="bodySm" tone="muted" className="m-0">
+                {row.email}
+              </AppTypography>
             </div>
           ) : null}
-          {!row.phone && !row.email && <span className="text-muted small">-</span>}
+          {!row.phone && !row.email && (
+            <AppTypography variant="bodySm" tone="muted" className="m-0">
+              -
+            </AppTypography>
+          )}
         </div>
       ),
     },
@@ -194,12 +202,16 @@ export default function SuppliersPage() {
       header: "Alamat",
       render: (row) => (
         row.address ? (
-          <div className="d-flex align-items-center gap-1 text-muted small text-truncate" style={{ maxWidth: 300 }}>
-            <MapPin size={12} className="flex-shrink-0" />
-            <span className="text-truncate">{row.address}</span>
+          <div className="d-flex align-items-center gap-1 text-truncate" style={{ maxWidth: 300 }}>
+            <MapPin size={12} className="flex-shrink-0 text-muted" />
+            <AppTypography variant="bodySm" tone="muted" className="text-truncate m-0">
+              {row.address}
+            </AppTypography>
           </div>
         ) : (
-          <span className="text-muted small">-</span>
+          <AppTypography variant="bodySm" tone="muted" className="m-0">
+            -
+          </AppTypography>
         )
       ),
     },
@@ -208,9 +220,9 @@ export default function SuppliersPage() {
       header: "Tanggal Dibuat",
       align: "center",
       render: (row) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.82rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
-        </span>
+        </AppTypography>
       ),
     },
     ...(canManageSuppliers

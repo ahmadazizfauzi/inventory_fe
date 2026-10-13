@@ -12,6 +12,7 @@ import {
   AppAlert,
   AppSkeleton,
   AppBadge,
+  AppTypography,
 } from "@/components";
 import { getProducts } from "@/modules/products/services/product.service";
 import { IProduct } from "@/modules/products/types/product.types";
@@ -272,51 +273,30 @@ export default function CreateStockMutationPage() {
                       <Package size={22} />
                     </div>
                     <div>
-                      <div
-                        className="fw-semibold"
-                        style={{ color: "var(--app-text-primary)" }}
-                      >
+                      <AppTypography variant="body" weight="semibold" className="m-0">
                         {selectedProduct.name}
-                      </div>
-                      <div
-                        className="font-mono small"
-                        style={{ color: "var(--app-text-muted)" }}
-                      >
+                      </AppTypography>
+                      <AppTypography variant="meta" tone="muted" className="m-0">
                         SKU: {selectedProduct.sku}
-                      </div>
+                      </AppTypography>
                     </div>
                   </div>
                   <div className="text-end">
-                    <div
-                      className="small"
-                      style={{ color: "var(--app-text-muted)" }}
-                    >
+                    <AppTypography variant="caption" tone="muted" className="m-0">
                       Stok Tersedia Saat Ini
-                    </div>
-                    <div
-                      className="font-mono fw-bold fs-4"
-                      style={{ color: "var(--app-primary)" }}
-                    >
-                      {selectedProduct.stock}{" "}
-                      <span
-                        className="fs-6 fw-normal"
-                        style={{ color: "var(--app-text-secondary)" }}
-                      >
-                        unit
-                      </span>
-                    </div>
+                    </AppTypography>
+                    <AppTypography variant="statValue" tone="accent" className="m-0">
+                      {selectedProduct.stock} unit
+                    </AppTypography>
                   </div>
                 </div>
               </div>
             )}
 
             <div className="col-12">
-              <label
-                className="form-label fw-semibold mb-1"
-                style={{ fontSize: "0.875rem", color: "var(--app-text)" }}
-              >
+              <AppTypography variant="label" className="mb-1 d-block">
                 Jenis Mutasi Barang *
-              </label>
+              </AppTypography>
               <AppDropdown
                 options={[
                   { label: "Barang Masuk (IN) - Stok Bertambah", value: "in" },

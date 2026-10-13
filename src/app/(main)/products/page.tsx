@@ -227,26 +227,18 @@ export default function ProductsPage() {
       width: 60,
       align: "center",
       render: (_, index) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {(pagination.current_page - 1) * pagination.per_page + index + 1}
-        </span>
+        </AppTypography>
       ),
     },
     {
       key: "sku",
       header: "SKU",
       render: (row) => (
-        <span
-          className="font-mono fw-semibold px-2 py-1 rounded-2"
-          style={{
-            fontSize: "0.8rem",
-            backgroundColor: "var(--app-hover-bg)",
-            color: "var(--app-primary)",
-            border: "1px solid var(--app-border)",
-          }}
-        >
+        <AppBadge variant="softPrimary" className="font-mono">
           {row.sku}
-        </span>
+        </AppBadge>
       ),
     },
     {
@@ -254,9 +246,9 @@ export default function ProductsPage() {
       header: "Nama Produk",
       render: (row) => (
         <div className="d-flex flex-column" style={{ minWidth: 200 }}>
-          <span className="fw-semibold text-truncate" style={{ color: "var(--app-text)" }}>
+          <AppTypography variant="body" weight="semibold" className="text-truncate m-0">
             {row.name}
-          </span>
+          </AppTypography>
         </div>
       ),
     },
@@ -274,9 +266,9 @@ export default function ProductsPage() {
       header: "HPP (Beli)",
       align: "right",
       render: (row) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-end">
           {formatRupiah(row.purchase_price)}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -284,9 +276,9 @@ export default function ProductsPage() {
       header: "Harga Jual",
       align: "right",
       render: (row) => (
-        <span className="font-mono fw-semibold text-success" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="success" weight="semibold" className="m-0 text-end">
           {formatRupiah(row.selling_price)}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -294,9 +286,9 @@ export default function ProductsPage() {
       header: "Stok Gudang",
       align: "center",
       render: (row) => (
-        <span className="fw-bold font-mono" style={{ color: "var(--app-text)", fontSize: "0.9rem" }}>
+        <AppTypography variant="meta" weight="bold" className="m-0 text-center">
           {row.stock}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -304,9 +296,9 @@ export default function ProductsPage() {
       header: "Min. Stok",
       align: "center",
       render: (row) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {row.min_stock}
-        </span>
+        </AppTypography>
       ),
     },
     {

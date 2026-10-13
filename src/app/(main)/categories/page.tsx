@@ -142,9 +142,9 @@ export default function CategoriesPage() {
       width: 60,
       align: "center",
       render: (_, index) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {(currentPage - 1) * itemsPerPage + index + 1}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -161,9 +161,9 @@ export default function CategoriesPage() {
           >
             <Layers size={14} />
           </div>
-          <span className="fw-semibold text-truncate" style={{ color: "var(--app-text)" }}>
+          <AppTypography variant="body" weight="semibold" className="text-truncate m-0">
             {row.name}
-          </span>
+          </AppTypography>
         </div>
       ),
     },
@@ -171,9 +171,9 @@ export default function CategoriesPage() {
       key: "description",
       header: "Deskripsi",
       render: (row) => (
-        <span className="text-muted small text-truncate d-inline-block" style={{ maxWidth: 350 }}>
+        <AppTypography variant="bodySm" tone="muted" className="text-truncate m-0 d-inline-block" style={{ maxWidth: 350 }}>
           {row.description || "-"}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -191,9 +191,9 @@ export default function CategoriesPage() {
       header: "Tanggal Dibuat",
       align: "center",
       render: (row) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.82rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
-        </span>
+        </AppTypography>
       ),
     },
     ...(canManageCategories

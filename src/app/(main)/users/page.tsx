@@ -93,12 +93,12 @@ export default function UsersPage() {
       header: "Nama Lengkap",
       render: (row) => (
         <div className="d-flex flex-column">
-          <span className="fw-semibold text-truncate" style={{ color: "var(--app-text)" }}>
+          <AppTypography variant="body" weight="semibold" className="text-truncate m-0">
             {row.name}
-          </span>
-          <span className="small text-muted font-mono" style={{ fontSize: "0.78rem" }}>
+          </AppTypography>
+          <AppTypography variant="meta" tone="muted" className="m-0">
             {row.email}
-          </span>
+          </AppTypography>
         </div>
       ),
     },
@@ -133,9 +133,9 @@ export default function UsersPage() {
       header: "Tanggal Registrasi",
       align: "center",
       render: (row) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.82rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
-        </span>
+        </AppTypography>
       ),
     },
     {

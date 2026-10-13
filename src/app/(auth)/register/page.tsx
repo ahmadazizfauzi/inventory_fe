@@ -9,6 +9,7 @@ import {
   AppInput,
   AppButton,
   AppAlert,
+  AppTypography,
 } from "@/components";
 import ThemeToggle from "@/components/buttons/ThemeToggle";
 import { register } from "@/modules/auth/services/auth.service";
@@ -109,25 +110,12 @@ export default function RegisterPage() {
       <div className="w-100 position-relative" style={{ maxWidth: 460, zIndex: 5 }}>
         {/* Brand Header */}
         <div className="text-center mb-4">
-          <h1
-            className="m-0 fw-bold tracking-tight"
-            style={{
-              fontSize: "1.75rem",
-              letterSpacing: "-0.03em",
-              color: "var(--app-text)",
-            }}
-          >
+          <AppTypography variant="h1" className="m-0">
             Registrasi Operator
-          </h1>
-          <p
-            className="mt-2 mb-0"
-            style={{
-              fontSize: "0.875rem",
-              color: "var(--app-text-muted)",
-            }}
-          >
+          </AppTypography>
+          <AppTypography variant="bodySm" tone="muted" className="mt-2 mb-0">
             Daftarkan akun staf baru ke portal manajemen inventaris
-          </p>
+          </AppTypography>
         </div>
 
         {/* Main Card */}
@@ -136,7 +124,6 @@ export default function RegisterPage() {
           style={{
             backgroundColor: "var(--app-surface)",
             borderColor: "var(--app-border-subtle)",
-            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.35)",
           }}
         >
           <AppCardBody className="p-4 p-sm-4">
@@ -214,13 +201,12 @@ export default function RegisterPage() {
 
         {/* Back to Login */}
         <div className="text-center mt-4 d-flex align-items-center justify-content-center gap-1">
-          <span style={{ fontSize: "0.875rem", color: "var(--app-text-muted)" }}>
+          <AppTypography variant="bodySm" tone="muted" className="m-0">
             Sudah memiliki akun?
-          </span>
+          </AppTypography>
           <Link
             href="/login"
-            className="d-inline-flex align-items-center gap-1 text-decoration-none fw-semibold"
-            style={{ color: "var(--app-primary)", fontSize: "0.875rem", lineHeight: 1 }}
+            className="d-inline-flex align-items-center gap-1 text-decoration-none fw-semibold small text-primary"
           >
             Masuk ke Akun
           </Link>

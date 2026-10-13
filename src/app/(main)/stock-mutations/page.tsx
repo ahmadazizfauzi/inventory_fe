@@ -14,6 +14,7 @@ import {
   AppSearchFilterBar,
   AppDropdown,
   AppPagination,
+  AppTypography,
   ColumnDef,
 } from "@/components";
 import { getStockMutations } from "@/modules/stock-mutations/services/mutation.service";
@@ -155,9 +156,9 @@ export default function StockMutationsPage() {
       width: 60,
       align: "center",
       render: (_, index) => (
-        <span className="font-mono text-muted" style={{ fontSize: "0.85rem" }}>
+        <AppTypography variant="meta" tone="muted" className="m-0 text-center">
           {(pagination.current_page - 1) * pagination.per_page + index + 1}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -165,24 +166,24 @@ export default function StockMutationsPage() {
       header: "Waktu Pencatatan",
       width: 170,
       render: (row) => {
-        if (!row.created_at) return <span className="text-muted small">-</span>;
+        if (!row.created_at) return <AppTypography variant="bodySm" tone="muted" className="m-0">-</AppTypography>;
         const dateObj = new Date(row.created_at);
         return (
           <div className="d-flex flex-column">
-            <span className="fw-medium" style={{ fontSize: "0.85rem", color: "var(--app-text)" }}>
+            <AppTypography variant="bodySm" weight="medium" className="m-0">
               {dateObj.toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
               })}
-            </span>
-            <span className="font-mono text-muted" style={{ fontSize: "0.75rem" }}>
+            </AppTypography>
+            <AppTypography variant="meta" tone="muted" className="m-0">
               {dateObj.toLocaleTimeString("id-ID", {
                 hour: "2-digit",
                 minute: "2-digit",
                 second: "2-digit",
               })} WIB
-            </span>
+            </AppTypography>
           </div>
         );
       },
@@ -202,12 +203,12 @@ export default function StockMutationsPage() {
             <Package size={14} />
           </div>
           <div className="d-flex flex-column text-truncate" style={{ maxWidth: 220 }}>
-            <span className="fw-semibold text-truncate" style={{ color: "var(--app-text)" }}>
+            <AppTypography variant="body" weight="semibold" className="text-truncate m-0">
               {row.product?.name || "Produk Tidak Ditemukan"}
-            </span>
-            <span className="font-mono text-muted" style={{ fontSize: "0.75rem" }}>
+            </AppTypography>
+            <AppTypography variant="meta" tone="muted" className="m-0">
               SKU: {row.product?.sku || "-"}
-            </span>
+            </AppTypography>
           </div>
         </div>
       ),
@@ -235,14 +236,13 @@ export default function StockMutationsPage() {
       header: "Jumlah",
       align: "center",
       render: (row) => (
-        <span
-          className={`fw-bold font-mono ${
-            row.type === "in" ? "text-success" : "text-danger"
-          }`}
-          style={{ fontSize: "0.95rem" }}
+        <AppTypography
+          variant="statValue"
+          tone={row.type === "in" ? "success" : "danger"}
+          className="m-0 text-center"
         >
           {row.type === "in" ? `+${row.quantity}` : `-${row.quantity}`}
-        </span>
+        </AppTypography>
       ),
     },
     {
@@ -251,11 +251,13 @@ export default function StockMutationsPage() {
       align: "center",
       render: (row) => (
         <div className="d-flex align-items-center justify-content-center gap-1 font-mono">
-          <span className="text-muted">{row.stock_before}</span>
+          <AppTypography variant="meta" tone="muted" className="m-0">
+            {row.stock_before}
+          </AppTypography>
           <ArrowLeftRight size={12} className="text-muted" />
-          <span className="fw-bold" style={{ color: "var(--app-text)" }}>
+          <AppTypography variant="meta" weight="bold" className="m-0">
             {row.stock_after}
-          </span>
+          </AppTypography>
         </div>
       ),
     },
@@ -265,11 +267,11 @@ export default function StockMutationsPage() {
       render: (row) => (
         <div className="d-flex align-items-center gap-1">
           <User size={13} className="text-muted" />
-          <span className="fw-medium small" style={{ color: "var(--app-text)" }}>
+          <AppTypography variant="bodySm" weight="medium" className="m-0">
             {row.user?.name || "Staf Sistem"}
-          </span>
+          </AppTypography>
           {row.user?.role && (
-            <AppBadge variant="softSecondary" className="ms-1 px-1 py-0" style={{ fontSize: "0.65rem" }}>
+            <AppBadge variant="softSecondary" className="ms-1 px-1 py-0">
               {row.user.role}
             </AppBadge>
           )}
@@ -419,12 +421,9 @@ export default function StockMutationsPage() {
       >
         <div className="d-flex flex-column gap-3 py-2">
           <div>
-            <label
-              className="form-label fw-semibold mb-1"
-              style={{ fontSize: "0.875rem", color: "var(--app-text)" }}
-            >
+            <AppTypography variant="label" className="mb-1 d-block">
               Filter Berdasarkan Produk
-            </label>
+            </AppTypography>
             <AppDropdown
               options={[
                 { label: "Semua Produk", value: "all" },
@@ -439,12 +438,9 @@ export default function StockMutationsPage() {
           </div>
 
           <div>
-            <label
-              className="form-label fw-semibold mb-1"
-              style={{ fontSize: "0.875rem", color: "var(--app-text)" }}
-            >
+            <AppTypography variant="label" className="mb-1 d-block">
               Jenis Alur Mutasi
-            </label>
+            </AppTypography>
             <AppDropdown
               options={[
                 { label: "Semua Jenis (IN & OUT)", value: "all" },
