@@ -27,7 +27,7 @@ export default function ColorsSection() {
           Colors & Palettes
         </AppTypography>
         <AppTypography variant="pageSubtitle" tone="secondary">
-          Skema warna Enterprise Inventory & Finansial dengan kontras tinggi yang otomatis beradaptasi pada mode gelap dan terang.
+          Skema warna Manajemen Inventory & Finansial dengan kontras tinggi yang otomatis beradaptasi pada mode gelap dan terang.
         </AppTypography>
       </div>
 

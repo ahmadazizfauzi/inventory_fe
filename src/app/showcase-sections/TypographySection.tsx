@@ -12,7 +12,7 @@ const weights: { weight: TypographyWeight; label: string; numeric: number }[] = 
 ];
 
 const scale = [
-  { variant: "display" as const, label: "Display", sample: "Enterprise Inventory" },
+  { variant: "display" as const, label: "Display", sample: "Manajemen Inventory" },
   { variant: "h1" as const, label: "Heading 1", sample: "Dashboard Monitoring" },
   { variant: "h2" as const, label: "Heading 2", sample: "Laporan Mutasi Barang" },
   { variant: "h3" as const, label: "Heading 3", sample: "Valuasi Aset Keuangan" },

@@ -340,9 +340,9 @@ export default function CategoriesPage() {
               Kategori <strong className="text-body">{categoryToDelete?.name}</strong> akan dihapus dari sistem inventaris.
             </AppTypography>
             {categoryToDelete?.products_count && categoryToDelete.products_count > 0 ? (
-              <p className="mb-0 text-warning small mt-2">
+              <AppTypography variant="bodySm" tone="warning" className="mt-2 mb-0">
                 Peringatan: Kategori ini memiliki {categoryToDelete.products_count} produk terkait. Hapus atau pindahkan produk tersebut terlebih dahulu.
-              </p>
+              </AppTypography>
             ) : null}
           </div>
         </div>

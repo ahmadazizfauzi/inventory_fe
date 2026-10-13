@@ -103,7 +103,7 @@ export default function LoginPage() {
         {/* Brand Header */}
         <div className="text-center mb-4">
           <AppTypography variant="h1" className="m-0">
-            Enterprise Inventory
+            Manajemen Inventory
           </AppTypography>
           <AppTypography variant="bodySm" tone="muted" className="mt-2 mb-0">
             Masuk ke portal manajemen inventaris & audit stok gudang

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Enterprise Inventory & Financial Design System | UI Kit",
+  title: "Manajemen Inventory & Financial Design System | UI Kit",
   description: "Bootstrap-powered Reusable Component UI Kit with Light & Dark Mode",
 };
 
