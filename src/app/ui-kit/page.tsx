@@ -120,6 +120,14 @@ export default function UIKitPage() {
         style={{ zIndex: 1040, borderColor: "var(--app-border)" }}
       >
         <div className="d-flex align-items-center gap-2">
+          <Link
+            href="/dashboard"
+            className="btn btn-outline-secondary btn-sm p-1.5 d-inline-flex align-items-center text-decoration-none rounded-2 me-1"
+            style={{ borderColor: "var(--app-border)" }}
+            title="Kembali ke Dashboard Backoffice"
+          >
+            <ArrowLeft size={16} />
+          </Link>
           <AppTypography variant="h3" tone="primary" className="m-0">
             UI Kit
           </AppTypography>
@@ -129,14 +137,27 @@ export default function UIKitPage() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="btn btn-outline-secondary btn-sm p-1 d-flex align-items-center"
+            className="btn btn-outline-secondary btn-sm p-1.5 d-flex align-items-center rounded-2"
             style={{ borderColor: "var(--app-border)" }}
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-md-none"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.65)",
+            backdropFilter: "blur(3px)",
+            zIndex: 1042,
+          }}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
       {/* Left Sidebar */}
       <aside
@@ -168,16 +189,27 @@ export default function UIKitPage() {
               UI Kit Showcase
             </span>
           </div>
-          <span
-            className="badge rounded-pill fw-medium"
-            style={{
-              fontSize: "0.6875rem",
-              backgroundColor: "rgba(99, 102, 241, 0.12)",
-              color: "var(--app-primary)",
-            }}
-          >
-            v1.0
-          </span>
+          <div className="d-flex align-items-center gap-1">
+            <span
+              className="badge rounded-pill fw-medium me-1"
+              style={{
+                fontSize: "0.6875rem",
+                backgroundColor: "rgba(99, 102, 241, 0.12)",
+                color: "var(--app-primary)",
+              }}
+            >
+              v1.0
+            </span>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary p-1 rounded-circle d-md-none"
+              style={{ borderColor: "var(--app-border)", width: 26, height: 26 }}
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Tutup menu"
+            >
+              <X size={14} />
+            </button>
+          </div>
         </div>
 
         {/* Search Input */}
@@ -273,11 +305,22 @@ export default function UIKitPage() {
             backdropFilter: "blur(8px)",
           }}
         >
-          <div className="d-flex align-items-center gap-2 font-mono small text-secondary">
-            <Code2 size={16} className="text-primary" />
-            <span className="text-body fw-semibold">Enterprise Design System</span>
-            <span>/</span>
-            <span className="text-primary fw-bold font-mono">{activeSection}</span>
+          <div className="d-flex align-items-center gap-3 font-mono small text-secondary">
+            <Link
+              href="/dashboard"
+              className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1.5 font-mono rounded-2 text-decoration-none me-2"
+              style={{ borderColor: "var(--app-border)", color: "var(--app-text-primary)" }}
+              title="Kembali ke Dashboard Backoffice"
+            >
+              <ArrowLeft size={14} />
+              <span>Kembali ke Panel</span>
+            </Link>
+            <div className="d-flex align-items-center gap-2">
+              <Code2 size={16} className="text-primary" />
+              <span className="text-body fw-semibold">Enterprise Design System</span>
+              <span>/</span>
+              <span className="text-primary fw-bold font-mono">{activeSection}</span>
+            </div>
           </div>
           <div className="d-flex align-items-center gap-2">
             <button

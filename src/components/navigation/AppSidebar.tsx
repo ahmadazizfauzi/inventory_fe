@@ -37,6 +37,7 @@ export interface AppSidebarProps {
   };
   className?: string;
   width?: number | string;
+  onNavigate?: () => void;
 }
 
 export default function AppSidebar({
@@ -48,6 +49,7 @@ export default function AppSidebar({
   user,
   className,
   width = 280,
+  onNavigate,
 }: AppSidebarProps) {
   return (
     <aside
@@ -154,7 +156,7 @@ export default function AppSidebar({
                 return (
                   <li key={item.id} className="nav-item">
                     {item.href ? (
-                      <Link href={item.href} className="text-decoration-none d-block">
+                      <Link href={item.href} onClick={onNavigate} className="text-decoration-none d-block">
                         {content}
                       </Link>
                     ) : (

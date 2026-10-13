@@ -22,14 +22,19 @@ import {
   ArrowLeftRight,
   Users,
   AlertCircle,
+  Palette,
+  Menu,
+  X,
 } from "lucide-react";
 
 function MainSidebar({
   currentUser,
   onRequestLogout,
+  onNavigate,
 }: {
   currentUser: IUser | null;
   onRequestLogout: () => void;
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const isSuperAdmin = currentUser?.role === "superadmin";
@@ -98,12 +103,27 @@ function MainSidebar({
     });
   }
 
+  // Group Dokumentasi di bawah Pengguna & Akses
+  menuGroups.push({
+    heading: "DOKUMENTASI",
+    items: [
+      {
+        id: "ui-kit",
+        label: "UI Kit & Komponen",
+        icon: <Palette size={17} />,
+        href: "/ui-kit",
+        active: pathname === "/ui-kit",
+      },
+    ],
+  });
+
   return (
     <AppSidebar
       brandTitle="Inventory System"
       brandSubtitle="Backoffice Panel"
       menuGroups={menuGroups}
       width={250}
+      onNavigate={onNavigate}
       user={{
         name: currentUser?.name || "Operator",
         role: currentUser?.role || "staff",
@@ -260,6 +280,9 @@ function MainBreadcrumb() {
   } else if (pathname.startsWith("/users")) {
     group = "Pengguna & Akses";
     page = "Manajemen Staff";
+  } else if (pathname.startsWith("/ui-kit")) {
+    group = "Dokumentasi";
+    page = "UI Kit & Komponen";
   }
 
   return (
@@ -281,6 +304,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile drawer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleConfirmLogout = async () => {
     setLoggingOut(true);
@@ -316,7 +349,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <div className="d-flex vh-100 overflow-hidden" style={{ backgroundColor: "var(--app-bg)" }}>
         {/* Sidebar Skeleton */}
         <div
-          className="d-flex flex-column border-end p-3 flex-shrink-0"
+          className="d-none d-lg-flex flex-column border-end p-3 flex-shrink-0"
           style={{ width: 250, borderColor: "var(--app-border)", backgroundColor: "var(--app-surface)" }}
         >
           <div className="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom" style={{ borderColor: "var(--app-border)" }}>
@@ -343,18 +376,18 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         {/* Content Skeleton */}
         <div className="flex-grow-1 d-flex flex-column min-w-0 h-100">
-          <header className="d-flex align-items-center justify-content-between px-4 border-bottom" style={{ height: 56, borderColor: "var(--app-border)", backgroundColor: "var(--app-surface)" }}>
+          <header className="d-flex align-items-center justify-content-between px-3 px-md-4 border-bottom" style={{ height: 56, borderColor: "var(--app-border)", backgroundColor: "var(--app-surface)" }}>
             <AppSkeleton width={180} height={16} />
             <AppSkeleton width={40} height={24} borderRadius={12} />
           </header>
-          <main className="flex-grow-1 p-4">
+          <main className="flex-grow-1 p-3 p-md-4">
             <AppSkeleton width="30%" height={28} className="mb-2" />
             <AppSkeleton width="50%" height={16} className="mb-4" />
             <div className="row g-3 mb-4">
-              <div className="col-3"><AppSkeleton height={100} borderRadius={10} /></div>
-              <div className="col-3"><AppSkeleton height={100} borderRadius={10} /></div>
-              <div className="col-3"><AppSkeleton height={100} borderRadius={10} /></div>
-              <div className="col-3"><AppSkeleton height={100} borderRadius={10} /></div>
+              <div className="col-12 col-sm-6 col-lg-3"><AppSkeleton height={100} borderRadius={10} /></div>
+              <div className="col-12 col-sm-6 col-lg-3"><AppSkeleton height={100} borderRadius={10} /></div>
+              <div className="col-12 col-sm-6 col-lg-3"><AppSkeleton height={100} borderRadius={10} /></div>
+              <div className="col-12 col-sm-6 col-lg-3"><AppSkeleton height={100} borderRadius={10} /></div>
             </div>
           </main>
         </div>
@@ -363,53 +396,125 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="d-flex vh-100 overflow-hidden" style={{ backgroundColor: "var(--app-bg)" }}>
-      {/* Sidebar with Suspended Pathname */}
-      <Suspense
-        fallback={
-          <div
-            style={{ width: 250, borderColor: "var(--app-border)", backgroundColor: "var(--app-surface)" }}
-            className="border-end h-100"
+    <div className="d-flex vh-100 overflow-hidden position-relative" style={{ backgroundColor: "var(--app-bg)" }}>
+      {/* Desktop Static Sidebar (Visible on >= 992px lg screen) */}
+      <div className="d-none d-lg-flex h-100 flex-shrink-0">
+        <Suspense
+          fallback={
+            <div
+              style={{ width: 250, borderColor: "var(--app-border)", backgroundColor: "var(--app-surface)" }}
+              className="border-end h-100"
+            />
+          }
+        >
+          <MainSidebar
+            currentUser={currentUser}
+            onRequestLogout={() => setShowLogoutModal(true)}
           />
-        }
+        </Suspense>
+      </div>
+
+      {/* Mobile Drawer Backdrop Overlay (Visible on < 992px when menu open) */}
+      {mobileMenuOpen && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-lg-none"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.65)",
+            backdropFilter: "blur(3px)",
+            zIndex: 1040,
+          }}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer (Slide out from Left) */}
+      <div
+        className="position-fixed top-0 bottom-0 start-0 d-lg-none h-100 shadow-lg"
+        style={{
+          width: 270,
+          maxWidth: "85vw",
+          zIndex: 1050,
+          transform: mobileMenuOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+          backgroundColor: "var(--app-surface)",
+        }}
       >
+        {/* Close Button inside Drawer Header */}
+        <div
+          className="position-absolute top-0 end-0 p-2 d-flex align-items-center"
+          style={{ zIndex: 1060 }}
+        >
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-secondary p-1 rounded-circle d-flex align-items-center justify-content-center"
+            style={{ borderColor: "var(--app-border)", width: 28, height: 28 }}
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Tutup menu navigasi"
+          >
+            <X size={15} />
+          </button>
+        </div>
+
         <MainSidebar
           currentUser={currentUser}
-          onRequestLogout={() => setShowLogoutModal(true)}
+          onRequestLogout={() => {
+            setMobileMenuOpen(false);
+            setShowLogoutModal(true);
+          }}
+          onNavigate={() => setMobileMenuOpen(false)}
         />
-      </Suspense>
+      </div>
 
       {/* Main Content Area */}
       <div className="flex-grow-1 d-flex flex-column min-w-0 h-100 overflow-hidden">
         <header
-          className="d-flex align-items-center justify-content-between px-4 border-bottom flex-shrink-0"
+          className="d-flex align-items-center justify-content-between px-3 px-md-4 border-bottom flex-shrink-0"
           style={{
             backgroundColor: "var(--app-surface)",
             borderColor: "var(--app-border)",
             height: 56,
           }}
         >
-          {/* Left: UI Kit AppBreadcrumb with Suspended Pathname */}
-          <Suspense
-            fallback={
-              <AppBreadcrumb
-                showHomeIcon
-                homeHref="/dashboard"
-                separator="slash"
-                items={[{ label: "Overview" }, { label: "Dashboard" }]}
-              />
-            }
-          >
-            <MainBreadcrumb />
-          </Suspense>
+          <div className="d-flex align-items-center min-w-0 me-2 overflow-hidden">
+            {/* Hamburger Button for Mobile / Tablet */}
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center me-2 me-md-3 d-lg-none flex-shrink-0"
+              style={{
+                borderColor: "var(--app-border)",
+                color: "var(--app-text-primary)",
+                backgroundColor: "var(--app-surface)",
+              }}
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Buka menu navigasi"
+            >
+              <Menu size={18} />
+            </button>
+
+            {/* Left: UI Kit AppBreadcrumb with Suspended Pathname */}
+            <div className="overflow-hidden text-truncate">
+              <Suspense
+                fallback={
+                  <AppBreadcrumb
+                    showHomeIcon
+                    homeHref="/dashboard"
+                    separator="slash"
+                    items={[{ label: "Overview" }, { label: "Dashboard" }]}
+                  />
+                }
+              >
+                <MainBreadcrumb />
+              </Suspense>
+            </div>
+          </div>
 
           {/* Right: Theme Toggle */}
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center flex-shrink-0">
             <ThemeToggle />
           </div>
         </header>
 
-        <main className="flex-grow-1 p-4 overflow-y-auto">{children}</main>
+        <main className="flex-grow-1 p-3 p-md-4 overflow-y-auto">{children}</main>
       </div>
 
       {/* Logout Confirmation Modal - UI Kit Design */}
