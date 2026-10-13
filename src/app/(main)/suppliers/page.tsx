@@ -24,6 +24,7 @@ import { ISupplierItem } from "@/modules/suppliers/types/supplier.types";
 import { IUser } from "@/modules/auth/types/auth.types";
 import { getMe } from "@/modules/auth/services/auth.service";
 import { Plus, Pencil, Trash2, Truck, Phone, Mail, MapPin, AlertCircle } from "lucide-react";
+import { formatDate } from "@/lib/formatters";
 
 export default function SuppliersPage() {
   const router = useRouter();
@@ -154,7 +155,7 @@ export default function SuppliersPage() {
       align: "center",
       render: (row) => (
         <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
+          {formatDate(row.created_at)}
         </AppTypography>
       ),
     },

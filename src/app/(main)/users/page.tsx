@@ -19,6 +19,7 @@ import {
 import { Plus, Pencil, Trash2, ShieldCheck, UserCheck, Shield, AlertCircle } from "lucide-react";
 import { getUsers, deleteUser } from "@/modules/users/services/user.service";
 import { IUserItem } from "@/modules/users/types/user.types";
+import { formatDate } from "@/lib/formatters";
 
 export default function UsersPage() {
   const router = useRouter();
@@ -109,7 +110,7 @@ export default function UsersPage() {
       align: "center",
       render: (row) => (
         <AppTypography variant="meta" tone="muted" className="m-0 text-center">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString("id-ID") : "-"}
+          {formatDate(row.created_at)}
         </AppTypography>
       ),
     },

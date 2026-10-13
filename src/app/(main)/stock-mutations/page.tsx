@@ -22,6 +22,7 @@ import { IStockMutationItem } from "@/modules/stock-mutations/types/mutation.typ
 import { IPaginationMeta } from "@/modules/products/types/product.types";
 import { getProducts } from "@/modules/products/services/product.service";
 import { Plus, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, User, Package, Truck } from "lucide-react";
+import { formatDateTime } from "@/lib/formatters";
 
 export default function StockMutationsPage() {
   const [mutations, setMutations] = useState<IStockMutationItem[]>([]);
@@ -167,22 +168,14 @@ export default function StockMutationsPage() {
       width: 170,
       render: (row) => {
         if (!row.created_at) return <AppTypography variant="bodySm" tone="muted" className="m-0">-</AppTypography>;
-        const dateObj = new Date(row.created_at);
+        const { date, time } = formatDateTime(row.created_at);
         return (
           <div className="d-flex flex-column">
             <AppTypography variant="bodySm" weight="medium" className="m-0">
-              {dateObj.toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
+              {date}
             </AppTypography>
             <AppTypography variant="meta" tone="muted" className="m-0">
-              {dateObj.toLocaleTimeString("id-ID", {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-              })} WIB
+              {time}
             </AppTypography>
           </div>
         );

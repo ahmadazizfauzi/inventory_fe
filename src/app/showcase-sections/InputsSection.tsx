@@ -76,7 +76,7 @@ export default function InputsSection() {
 
             <AppInput
               label="Email Administrator"
-              defaultValue="admin@siindonesia.com"
+              defaultValue="admin@company.com"
               icon={<Mail size={18} />}
             />
 
