@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, AlertTriangle, Info, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, Info } from "lucide-react";
 
 const alertVariants = cva(
   "alert d-flex align-items-start gap-2 py-3 px-3 rounded-3 border shadow-sm transition-all position-relative overflow-hidden",
@@ -59,22 +59,30 @@ export default function AppAlert({
   ...props
 }: AppAlertProps) {
   const [visible, setVisible] = useState(true);
+  const onDismissRef = useRef(onDismiss);
+
+  useEffect(() => {
+    onDismissRef.current = onDismiss;
+  }, [onDismiss]);
+
+  useEffect(() => {
+    setVisible(true);
+  }, [children, title]);
+
+  const handleClose = () => {
+    setVisible(false);
+    onDismissRef.current?.();
+  };
 
   useEffect(() => {
     if (!autoClose || !duration) return;
     const timer = setTimeout(() => {
-      setVisible(false);
-      onDismiss?.();
+      handleClose();
     }, duration);
     return () => clearTimeout(timer);
-  }, [autoClose, duration, onDismiss]);
+  }, [autoClose, duration, children, title]);
 
   if (!visible) return null;
-
-  const handleClose = () => {
-    setVisible(false);
-    onDismiss?.();
-  };
 
   const renderedIcon = icon ?? defaultIcons[variant ?? "info"];
 
@@ -98,10 +106,11 @@ export default function AppAlert({
         />
       )}
 
-      {/* 5-second countdown progress bar */}
+      {/* Countdown progress bar that auto-dismisses upon animation end */}
       {autoClose && duration > 0 && (
         <div
           className="position-absolute bottom-0 start-0"
+          onAnimationEnd={handleClose}
           style={{
             height: 3,
             backgroundColor: "currentColor",
