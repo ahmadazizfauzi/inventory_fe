@@ -98,6 +98,8 @@ export default function CreateCategoryPage() {
     }
   };
 
+  const isFormValid = formData.name.trim() !== "";
+
   return (
     <div className="container-fluid p-0" style={{ maxWidth: 1200 }}>
       {/* Floating Top-Right Alert Box */}
@@ -126,7 +128,14 @@ export default function CreateCategoryPage() {
         onBack={() => router.push("/categories")}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Section: Informasi Kategori */}
         <AppFormSection
           title="Informasi Kategori"
@@ -160,6 +169,7 @@ export default function CreateCategoryPage() {
         {/* Bottom Form Actions */}
         <div className="d-flex align-items-center justify-content-end gap-3 pt-4 mt-2">
           <AppButton
+            type="button"
             variant="outlineSecondary"
             size="md"
             onClick={() => router.push("/categories")}
@@ -172,6 +182,7 @@ export default function CreateCategoryPage() {
             variant="primary"
             size="md"
             isLoading={loading}
+            disabled={!isFormValid || loading}
           >
             Tambah Kategori
           </AppButton>

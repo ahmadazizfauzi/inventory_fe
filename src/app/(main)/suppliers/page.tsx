@@ -80,9 +80,10 @@ export default function SuppliersPage() {
   const canManageSuppliers =
     currentUser?.role === "superadmin" || currentUser?.role === "admin";
 
-  const loadSuppliers = useCallback(async () => {
+  const loadSuppliers = useCallback(async (searchParam?: string) => {
     setLoading(true);
-    const res = await getSuppliers();
+    const effectiveSearch = searchParam !== undefined ? searchParam : search;
+    const res = await getSuppliers({ search: effectiveSearch });
     if (res.status) {
       setSuppliers(res.data);
     } else {
@@ -92,11 +93,11 @@ export default function SuppliersPage() {
       });
     }
     setLoading(false);
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     loadSuppliers();
-  }, [loadSuppliers]);
+  }, []);
 
   const handleOpenDeleteModal = (sup: ISupplierItem) => {
     setSupplierToDelete(sup);
@@ -310,9 +311,13 @@ export default function SuppliersPage() {
 
       {/* Filter & Search Bar */}
       <AppSearchFilterBar
-        searchPlaceholder="Cari nama supplier, telepon, email, alamat..."
+        searchPlaceholder="Cari nama supplier, telepon, email, alamat (Tekan Enter)..."
         searchValue={search}
-        onSearchChange={setSearch}
+        onSearchSubmit={(val) => {
+          setSearch(val);
+          setCurrentPage(1);
+          loadSuppliers(val);
+        }}
       />
 
       {/* Main Content Card */}

@@ -246,6 +246,13 @@ export default function EditProductPage() {
     }
   };
 
+  const isFormValid =
+    formData.sku.trim() !== "" &&
+    formData.name.trim() !== "" &&
+    Boolean(formData.category_id) &&
+    formData.purchase_price.trim() !== "" &&
+    formData.selling_price.trim() !== "";
+
   if (initialLoading) {
     return <EditProductSkeleton />;
   }
@@ -278,7 +285,14 @@ export default function EditProductPage() {
         onBack={() => router.push("/products")}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Section 1: Informasi Dasar */}
         <AppFormSection
           title="Informasi Dasar"
@@ -408,6 +422,7 @@ export default function EditProductPage() {
         {/* Bottom Form Actions */}
         <div className="d-flex align-items-center justify-content-end gap-3 pt-4 mt-2">
           <AppButton
+            type="button"
             variant="outlineSecondary"
             size="md"
             onClick={() => router.push("/products")}
@@ -420,6 +435,7 @@ export default function EditProductPage() {
             variant="primary"
             size="md"
             isLoading={loading}
+            disabled={!isFormValid || loading}
           >
             Perbarui Produk
           </AppButton>

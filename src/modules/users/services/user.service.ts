@@ -2,9 +2,20 @@ import axiosInstance from "@/lib/axiosInstance";
 import { AxiosError } from "axios";
 import { IUserItem, ICreateUserPayload, IUpdateUserPayload } from "../types/user.types";
 
-export const getUsers = async (page = 1, perPage = 10) => {
+export const getUsers = async (
+  page = 1,
+  perPage = 10,
+  search?: string,
+  startDate?: string,
+  endDate?: string
+) => {
   try {
-    const res = await axiosInstance.get(`/users?page=${page}&per_page=${perPage}`);
+    const params: Record<string, any> = { page, per_page: perPage };
+    if (search && search.trim() !== "") params.search = search.trim();
+    if (startDate) params.start_date = startDate;
+    if (endDate) params.end_date = endDate;
+
+    const res = await axiosInstance.get("/users", { params });
     return {
       status: true,
       data: (res.data.data || []) as IUserItem[],

@@ -88,14 +88,17 @@ export default function StockMutationsPage() {
   }, []);
 
   const loadMutations = useCallback(
-    async (page = 1) => {
+    async (page = 1, searchParam?: string) => {
       setLoading(true);
+      const effectiveSearch = searchParam !== undefined ? searchParam : search;
       const res = await getStockMutations(
         page,
         10,
         selectedProductId,
         dateRange.startDate || undefined,
-        dateRange.endDate || undefined
+        dateRange.endDate || undefined,
+        effectiveSearch,
+        selectedType
       );
       if (res.status) {
         setMutations(res.data);
@@ -108,12 +111,12 @@ export default function StockMutationsPage() {
       }
       setLoading(false);
     },
-    [selectedProductId, dateRange]
+    [selectedProductId, selectedType, dateRange, search]
   );
 
   useEffect(() => {
     loadMutations(1);
-  }, [loadMutations]);
+  }, [selectedProductId, selectedType, dateRange]);
 
   const handleOpenFilterDialog = () => {
     setTempProductId(selectedProductId);
@@ -145,28 +148,6 @@ export default function StockMutationsPage() {
     selectedType !== "all" ||
     dateRange.startDate !== null ||
     dateRange.endDate !== null;
-
-  // Client-side search and type filtering on the current page's records
-  const filteredMutations = mutations.filter((item) => {
-    if (selectedType !== "all" && item.type !== selectedType) {
-      return false;
-    }
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    const prodName = item.product?.name?.toLowerCase() || "";
-    const prodSku = item.product?.sku?.toLowerCase() || "";
-    const userName = item.user?.name?.toLowerCase() || "";
-    const supplierName = item.supplier?.name?.toLowerCase() || "";
-    const notes = item.notes?.toLowerCase() || "";
-
-    return (
-      prodName.includes(q) ||
-      prodSku.includes(q) ||
-      userName.includes(q) ||
-      supplierName.includes(q) ||
-      notes.includes(q)
-    );
-  });
 
   const columns: ColumnDef<IStockMutationItem>[] = [
     {
@@ -372,12 +353,18 @@ export default function StockMutationsPage() {
       {/* Filter & Search Bar */}
       <AppSearchFilterBar
         searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Cari produk, SKU, operator, supplier, atau catatan..."
+        onSearchSubmit={(val) => {
+          setSearch(val);
+          loadMutations(1, val);
+        }}
+        searchPlaceholder="Cari produk, SKU, operator, supplier (Tekan Enter)..."
         onFilterClick={handleOpenFilterDialog}
         isFilterActive={isFilterActive}
         filterButtonText="Filter"
-        onResetClick={handleResetFilters}
+        onResetClick={() => {
+          handleResetFilters();
+          loadMutations(1, "");
+        }}
       />
 
       {/* Main Table */}
@@ -385,7 +372,7 @@ export default function StockMutationsPage() {
         <AppCardBody className="p-0">
           <AppTable<IStockMutationItem>
             columns={columns}
-            data={filteredMutations}
+            data={mutations}
             keyExtractor={(row) => row.id}
             isLoading={loading}
             minWidth={1050}

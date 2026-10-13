@@ -198,6 +198,13 @@ export default function CreateStockMutationPage() {
     return <CreateMutationSkeleton />;
   }
 
+  const qty = parseInt(formData.quantity, 10);
+  const isFormValid =
+    Boolean(formData.product_id) &&
+    !isNaN(qty) &&
+    qty > 0 &&
+    (formData.type !== "out" || !selectedProduct || qty <= selectedProduct.stock);
+
   return (
     <div className="container-fluid p-0" style={{ maxWidth: 1200 }}>
       {/* Floating Top-Right Alert Box */}
@@ -232,7 +239,14 @@ export default function CreateStockMutationPage() {
         onBack={() => router.push("/stock-mutations")}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Section: Pemilihan Produk & Jenis Mutasi */}
         <AppFormSection
           title="Produk & Arah Mutasi"
@@ -396,6 +410,7 @@ export default function CreateStockMutationPage() {
         {/* Bottom Form Actions */}
         <div className="d-flex align-items-center justify-content-end gap-3 pt-4 mt-2">
           <AppButton
+            type="button"
             variant="outlineSecondary"
             size="md"
             onClick={() => router.push("/stock-mutations")}
@@ -408,6 +423,7 @@ export default function CreateStockMutationPage() {
             variant="primary"
             size="md"
             isLoading={loading}
+            disabled={!isFormValid || loading}
           >
             Simpan Mutasi Stok
           </AppButton>

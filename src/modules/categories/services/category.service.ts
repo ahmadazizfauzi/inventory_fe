@@ -6,9 +6,14 @@ import {
   IUpdateCategoryPayload,
 } from "../types/category.types";
 
-export const getCategories = async () => {
+export const getCategories = async (params?: { search?: string; start_date?: string; end_date?: string }) => {
   try {
-    const res = await axiosInstance.get("/categories");
+    const cleanParams: Record<string, string> = {};
+    if (params?.search && params.search.trim() !== "") cleanParams.search = params.search.trim();
+    if (params?.start_date) cleanParams.start_date = params.start_date;
+    if (params?.end_date) cleanParams.end_date = params.end_date;
+
+    const res = await axiosInstance.get("/categories", { params: cleanParams });
     return {
       status: true,
       data: (res.data.data || []) as ICategoryItem[],

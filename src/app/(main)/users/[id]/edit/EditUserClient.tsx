@@ -104,6 +104,11 @@ export default function EditUserClient() {
     }
   };
 
+  const isFormValid =
+    (formData.name || "").trim() !== "" &&
+    (formData.email || "").trim() !== "" &&
+    (!formData.password || formData.password.length >= 6);
+
   if (initialLoading) {
     return (
       <div className="container-fluid p-0">
@@ -147,7 +152,14 @@ export default function EditUserClient() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         <AppFormSection
           title="Informasi Profil & Wewenang"
           description="Ubah identitas staf, email masuk, kata sandi baru (opsional), dan hak akses."
@@ -218,6 +230,7 @@ export default function EditUserClient() {
             variant="primary"
             type="submit"
             isLoading={submitting}
+            disabled={!isFormValid || submitting}
           >
             Perbarui Akun
           </AppButton>

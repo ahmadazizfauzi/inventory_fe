@@ -81,6 +81,12 @@ const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
               color: "var(--app-text-primary)",
             }}
             {...props}
+            onWheel={(e) => {
+              if (effectiveType === "number" || type === "number") {
+                (e.target as HTMLElement).blur();
+              }
+              props.onWheel?.(e);
+            }}
           />
           {enablePasswordToggle ? (
             <button

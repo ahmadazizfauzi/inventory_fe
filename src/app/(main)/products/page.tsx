@@ -141,12 +141,13 @@ export default function ProductsPage() {
 
   // Fetch Products
   const loadProducts = useCallback(
-    async (pageToLoad = 1) => {
+    async (pageToLoad = 1, searchParam?: string) => {
       setLoading(true);
+      const effectiveSearch = searchParam !== undefined ? searchParam : search;
       const res = await getProducts({
         page: pageToLoad,
         per_page: pagination.per_page,
-        search,
+        search: effectiveSearch,
         category_id: selectedCategory === "all" ? undefined : selectedCategory,
         stock_status: stockStatus as any,
         sort_by: sortBy as any,
@@ -169,13 +170,10 @@ export default function ProductsPage() {
     [pagination.per_page, search, selectedCategory, stockStatus, sortBy, sortOrder, dateRange]
   );
 
-  // Trigger load when search or active filters change
+  // Trigger load on initial mount and when dialog filters change (Enter triggers search explicitly)
   useEffect(() => {
-    const handler = setTimeout(() => {
-      loadProducts(1);
-    }, search ? 300 : 0);
-    return () => clearTimeout(handler);
-  }, [search, selectedCategory, stockStatus, sortBy, sortOrder, dateRange, loadProducts]);
+    loadProducts(1);
+  }, [selectedCategory, stockStatus, sortBy, sortOrder, dateRange]);
 
   // Open Filter Dialog
   const handleOpenFilterDialog = () => {
@@ -425,12 +423,18 @@ export default function ProductsPage() {
       {/* UI Kit Search & Filter Bar (1 baris rapi dan presisi) */}
       <AppSearchFilterBar
         searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Cari..."
+        onSearchSubmit={(val) => {
+          setSearch(val);
+          loadProducts(1, val);
+        }}
+        searchPlaceholder="Cari nama atau SKU produk (Tekan Enter)..."
         onFilterClick={handleOpenFilterDialog}
         isFilterActive={isFilterActive}
         filterButtonText="Filter"
-        onResetClick={handleResetFilters}
+        onResetClick={() => {
+          handleResetFilters();
+          loadProducts(1, "");
+        }}
       />
 
       {/* Main Table using UI Kit AppTable with horizontal scroll support */}

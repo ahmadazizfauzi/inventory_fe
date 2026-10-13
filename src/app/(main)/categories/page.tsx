@@ -81,9 +81,10 @@ export default function CategoriesPage() {
   const canManageCategories =
     currentUser?.role === "superadmin" || currentUser?.role === "admin";
 
-  const loadCategories = useCallback(async () => {
+  const loadCategories = useCallback(async (searchParam?: string) => {
     setLoading(true);
-    const res = await getCategories();
+    const effectiveSearch = searchParam !== undefined ? searchParam : search;
+    const res = await getCategories({ search: effectiveSearch });
     if (res.status) {
       setCategories(res.data);
     } else {
@@ -93,11 +94,11 @@ export default function CategoriesPage() {
       });
     }
     setLoading(false);
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     loadCategories();
-  }, [loadCategories]);
+  }, []);
 
   const handleOpenDeleteModal = (cat: ICategoryItem) => {
     setCategoryToDelete(cat);
@@ -275,8 +276,12 @@ export default function CategoriesPage() {
       {/* UI Kit Search Bar */}
       <AppSearchFilterBar
         searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Cari kategori..."
+        onSearchSubmit={(val) => {
+          setSearch(val);
+          setCurrentPage(1);
+          loadCategories(val);
+        }}
+        searchPlaceholder="Cari nama atau deskripsi kategori (Tekan Enter)..."
       />
 
       {/* Main Table */}

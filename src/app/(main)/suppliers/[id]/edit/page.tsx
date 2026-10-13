@@ -191,6 +191,8 @@ export default function EditSupplierPage() {
     }
   };
 
+  const isFormValid = formData.name.trim() !== "";
+
   if (initialLoading) {
     return <EditSupplierSkeleton />;
   }
@@ -223,7 +225,14 @@ export default function EditSupplierPage() {
         onBack={() => router.push("/suppliers")}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Section: Informasi Supplier */}
         <AppFormSection
           title="Informasi Supplier"
@@ -286,6 +295,7 @@ export default function EditSupplierPage() {
         {/* Bottom Form Actions */}
         <div className="d-flex align-items-center justify-content-end gap-3 pt-4 mt-2">
           <AppButton
+            type="button"
             variant="outlineSecondary"
             size="md"
             onClick={() => router.push("/suppliers")}
@@ -298,6 +308,7 @@ export default function EditSupplierPage() {
             variant="primary"
             size="md"
             isLoading={loading}
+            disabled={!isFormValid || loading}
           >
             Simpan Perubahan
           </AppButton>

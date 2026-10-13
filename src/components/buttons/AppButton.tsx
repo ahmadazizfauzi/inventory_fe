@@ -61,11 +61,13 @@ export default function AppButton({
   icon,
   iconPosition = "start",
   disabled,
+  type = "button",
   children,
   ...props
 }: AppButtonProps) {
   return (
     <button
+      type={type}
       className={cn(buttonVariants({ variant, size, fullWidth }), className)}
       disabled={disabled || isLoading}
       {...props}

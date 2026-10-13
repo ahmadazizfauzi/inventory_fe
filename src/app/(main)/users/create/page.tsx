@@ -73,6 +73,11 @@ export default function CreateUserPage() {
     }
   };
 
+  const isFormValid =
+    formData.name.trim() !== "" &&
+    formData.email.trim() !== "" &&
+    formData.password.length >= 6;
+
   return (
     <div className="container-fluid p-0">
       <AppPageHeader
@@ -100,7 +105,14 @@ export default function CreateUserPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         <AppFormSection
           title="Informasi Profil & Akses"
           description="Lengkapi identitas staf, alamat email untuk login, kata sandi, serta hak akses."
@@ -174,6 +186,7 @@ export default function CreateUserPage() {
             variant="primary"
             type="submit"
             isLoading={loading}
+            disabled={!isFormValid || loading}
           >
             Simpan Pengguna
           </AppButton>

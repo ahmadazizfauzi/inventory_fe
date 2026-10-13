@@ -136,6 +136,13 @@ export default function CreateProductPage() {
     }
   };
 
+  const isFormValid =
+    formData.sku.trim() !== "" &&
+    formData.name.trim() !== "" &&
+    Boolean(formData.category_id) &&
+    formData.purchase_price.trim() !== "" &&
+    formData.selling_price.trim() !== "";
+
   return (
     <div className="container-fluid p-0" style={{ maxWidth: 1200 }}>
       {/* Floating Top-Right Alert Box (Sesuai UI Kit AppAlert) */}
@@ -164,7 +171,14 @@ export default function CreateProductPage() {
         onBack={() => router.push("/products")}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
         {/* Section 1: Informasi Dasar */}
         <AppFormSection
           title="Informasi Dasar"
@@ -298,6 +312,7 @@ export default function CreateProductPage() {
         {/* Bottom Form Actions: ONLY at bottom right, NO icon */}
         <div className="d-flex align-items-center justify-content-end gap-3 pt-4 mt-2">
           <AppButton
+            type="button"
             variant="outlineSecondary"
             size="md"
             onClick={() => router.push("/products")}
@@ -310,6 +325,7 @@ export default function CreateProductPage() {
             variant="primary"
             size="md"
             isLoading={loading}
+            disabled={!isFormValid || loading}
           >
             Simpan Produk
           </AppButton>

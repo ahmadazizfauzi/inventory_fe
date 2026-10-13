@@ -6,9 +6,14 @@ import {
   IUpdateSupplierPayload,
 } from "../types/supplier.types";
 
-export const getSuppliers = async () => {
+export const getSuppliers = async (params?: { search?: string; start_date?: string; end_date?: string }) => {
   try {
-    const res = await axiosInstance.get("/suppliers");
+    const cleanParams: Record<string, string> = {};
+    if (params?.search && params.search.trim() !== "") cleanParams.search = params.search.trim();
+    if (params?.start_date) cleanParams.start_date = params.start_date;
+    if (params?.end_date) cleanParams.end_date = params.end_date;
+
+    const res = await axiosInstance.get("/suppliers", { params: cleanParams });
     return {
       status: true,
       data: (res.data.data || []) as ISupplierItem[],

@@ -14,6 +14,7 @@ import {
   AppAlert,
   AppSkeleton,
   AppTypography,
+  AppSearchFilterBar,
   ColumnDef,
 } from "@/components";
 import { Plus, Pencil, Trash2, ShieldCheck, UserCheck, Shield, AlertCircle } from "lucide-react";
@@ -28,6 +29,7 @@ export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [search, setSearch] = useState("");
 
   const [alert, setAlert] = useState<{ variant: "success" | "danger"; message: string } | null>(null);
 
@@ -36,9 +38,10 @@ export default function UsersPage() {
   const [userToDelete, setUserToDelete] = useState<IUserItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const fetchUsers = useCallback(async (page = 1) => {
+  const fetchUsers = useCallback(async (page = 1, searchParam?: string) => {
     setLoading(true);
-    const res = await getUsers(page, 10);
+    const effectiveSearch = searchParam !== undefined ? searchParam : search;
+    const res = await getUsers(page, 10, effectiveSearch);
     if (res.status) {
       setUsers(res.data);
       const pag = (res as any).pagination || res.meta;
@@ -218,6 +221,17 @@ export default function UsersPage() {
           </AppAlert>
         </div>
       )}
+
+      {/* UI Kit Search Bar */}
+      <AppSearchFilterBar
+        searchValue={search}
+        onSearchSubmit={(val) => {
+          setSearch(val);
+          setCurrentPage(1);
+          fetchUsers(1, val);
+        }}
+        searchPlaceholder="Cari nama atau email pengguna (Tekan Enter)..."
+      />
 
       {/* Main Content Card with Table and Pagination */}
       <AppCard>
