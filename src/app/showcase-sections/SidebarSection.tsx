@@ -11,7 +11,6 @@ import {
   ArrowLeftRight,
   Users,
   Settings,
-  Boxes,
 } from "lucide-react";
 
 export default function SidebarSection() {
@@ -24,64 +23,53 @@ export default function SidebarSection() {
         {
           id: "dashboard",
           label: "Dashboard",
-          icon: <LayoutDashboard size={18} />,
-          badge: "Live",
-          badgeVariant: "softSuccess",
+          icon: <LayoutDashboard size={17} />,
           onClick: () => setActiveMenu("dashboard"),
         },
       ],
     },
     {
-      heading: "INVENTORY MANAGEMENT",
+      heading: "INVENTORY",
       items: [
         {
           id: "products",
           label: "Produk & Stok",
-          icon: <Package size={18} />,
-          badge: 150,
-          badgeVariant: "softPrimary",
+          icon: <Package size={17} />,
           onClick: () => setActiveMenu("products"),
         },
         {
           id: "categories",
-          label: "Kategori Barang",
-          icon: <Layers size={18} />,
+          label: "Kategori",
+          icon: <Layers size={17} />,
           onClick: () => setActiveMenu("categories"),
         },
         {
           id: "suppliers",
-          label: "Data Supplier",
-          icon: <Truck size={18} />,
+          label: "Supplier",
+          icon: <Truck size={17} />,
           onClick: () => setActiveMenu("suppliers"),
         },
-      ],
-    },
-    {
-      heading: "TRANSACTIONS",
-      items: [
         {
-          id: "mutations",
+          id: "stock-mutations",
           label: "Mutasi Stok",
-          icon: <ArrowLeftRight size={18} />,
-          badge: "5 Kritis",
-          badgeVariant: "softWarning",
-          onClick: () => setActiveMenu("mutations"),
+          icon: <ArrowLeftRight size={17} />,
+          onClick: () => setActiveMenu("stock-mutations"),
         },
       ],
     },
     {
-      heading: "SYSTEM",
+      heading: "SISTEM",
       items: [
         {
           id: "users",
           label: "Manajemen User",
-          icon: <Users size={18} />,
+          icon: <Users size={17} />,
           onClick: () => setActiveMenu("users"),
         },
         {
           id: "settings",
           label: "Pengaturan",
-          icon: <Settings size={18} />,
+          icon: <Settings size={17} />,
           onClick: () => setActiveMenu("settings"),
         },
       ],
@@ -98,7 +86,7 @@ export default function SidebarSection() {
           Sidebar Navigation
         </AppTypography>
         <AppTypography variant="pageSubtitle" tone="secondary">
-          Komponen sidebar backoffice berbasis Bootstrap dengan grup heading, item navigasi aktif, badge notifikasi, dan widget profil admin.
+          Komponen sidebar backoffice berbasis Bootstrap dengan grup heading, item navigasi aktif, dan widget profil admin.
         </AppTypography>
       </div>
 
@@ -111,9 +99,8 @@ export default function SidebarSection() {
         }}
       >
         <AppSidebar
-          brandTitle="PT Sistem Integrasi"
-          brandSubtitle="Inventory Backoffice"
-          brandIcon={<Boxes size={20} />}
+          brandTitle="Inventory System"
+          brandSubtitle="Backoffice Panel"
           menuGroups={sampleMenuGroups}
           activeId={activeMenu}
           width="100%"

@@ -19,6 +19,7 @@ import {
   Code2,
   Boxes,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 
 import ThemeToggle from "@/components/buttons/ThemeToggle";
@@ -34,7 +35,9 @@ import PageHeaderSection from "@/app/showcase-sections/PageHeaderSection";
 import TablesSection from "@/app/showcase-sections/TablesSection";
 import FeedbackSection from "@/app/showcase-sections/FeedbackSection";
 import SidebarSection from "@/app/showcase-sections/SidebarSection";
-import { LayoutDashboard, Compass } from "lucide-react";
+import SkeletonSection from "@/app/showcase-sections/SkeletonSection";
+import PaginationSection from "@/app/showcase-sections/PaginationSection";
+import { LayoutDashboard, Compass, ListOrdered } from "lucide-react";
 
 interface NavItem {
   id: string;
@@ -48,10 +51,12 @@ const navItems: NavItem[] = [
   { id: "buttons", label: "AppButton.tsx", icon: <MousePointerClick size={16} /> },
   { id: "cards", label: "AppStatCard.tsx & AppCard", icon: <BarChart3 size={16} /> },
   { id: "badges", label: "AppBadge.tsx", icon: <Tag size={16} /> },
-  { id: "inputs", label: "AppInput.tsx & Select", icon: <TextCursorInput size={16} /> },
+  { id: "inputs", label: "AppInput.tsx & Dropdown", icon: <TextCursorInput size={16} /> },
   { id: "page-header", label: "AppPageHeader.tsx", icon: <Compass size={16} /> },
   { id: "tables", label: "AppTable.tsx", icon: <Table size={16} /> },
+  { id: "pagination", label: "AppPagination.tsx", icon: <ListOrdered size={16} /> },
   { id: "feedback", label: "AppAlert.tsx & AppModal", icon: <Bell size={16} /> },
+  { id: "skeleton", label: "AppSkeleton.tsx", icon: <Loader2 size={16} /> },
   { id: "sidebar", label: "AppSidebar.tsx", icon: <LayoutDashboard size={16} /> },
 ];
 
@@ -101,7 +106,7 @@ export default function UIKitPage() {
 
   const copyImportSnippet = () => {
     navigator.clipboard.writeText(
-      'import { AppTypography, AppButton, AppStatCard, AppCard, AppBadge, AppInput, AppSelect, AppTextarea, AppTable, AppAlert, AppModal, AppSidebar, AppBreadcrumb } from "@/components";'
+      'import { AppTypography, AppButton, AppStatCard, AppCard, AppBadge, AppInput, AppDropdown, AppSelect, AppTextarea, AppTable, AppPagination, AppAlert, AppModal, AppSidebar, AppBreadcrumb, AppSkeleton } from "@/components";'
     );
     setCopiedImport(true);
     setTimeout(() => setCopiedImport(false), 2000);
@@ -145,26 +150,51 @@ export default function UIKitPage() {
         }}
       >
         {/* Brand Title */}
-        <div className="d-flex align-items-center px-4 border-bottom" style={{ borderColor: "var(--app-border)", height: 65 }}>
-          <AppTypography variant="h3" tone="primary" className="m-0">
-            UI Kit
-          </AppTypography>
+        <div
+          className="d-flex align-items-center justify-content-between px-3 border-bottom flex-shrink-0"
+          style={{ borderColor: "var(--app-border)", height: 56 }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <span
+              className="rounded-circle"
+              style={{
+                width: 8,
+                height: 8,
+                backgroundColor: "var(--app-primary)",
+                boxShadow: "0 0 8px var(--app-primary)",
+              }}
+            />
+            <span className="fw-bold" style={{ fontSize: "0.95rem", color: "var(--app-text-primary)" }}>
+              UI Kit Showcase
+            </span>
+          </div>
+          <span
+            className="badge rounded-pill fw-medium"
+            style={{
+              fontSize: "0.6875rem",
+              backgroundColor: "rgba(99, 102, 241, 0.12)",
+              color: "var(--app-primary)",
+            }}
+          >
+            v1.0
+          </span>
         </div>
 
         {/* Search Input */}
-        <div className="p-3 border-bottom" style={{ borderColor: "var(--app-border)" }}>
+        <div className="p-3 border-bottom flex-shrink-0" style={{ borderColor: "var(--app-border)" }}>
           <div className="position-relative">
             <Search
-              size={14}
-              className="position-absolute top-50 start-0 translate-middle-y ms-2 text-secondary pointer-events-none"
+              size={13}
+              className="position-absolute top-50 start-0 translate-middle-y ms-2.5 pointer-events-none text-muted"
             />
             <input
               type="text"
               placeholder="Cari komponen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="form-control form-control-sm ps-4 rounded-2"
+              className="form-control form-control-sm ps-4 rounded-2 border"
               style={{
+                fontSize: "0.8125rem",
                 backgroundColor: "var(--app-surface)",
                 borderColor: "var(--app-border)",
                 color: "var(--app-text-primary)",
@@ -183,17 +213,41 @@ export default function UIKitPage() {
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   type="button"
-                  className={`btn d-flex align-items-center gap-2 w-100 text-start py-2 px-3 rounded-2 small font-mono transition-all border ${
-                    isActive
-                      ? "btn-primary shadow-sm fw-bold border-primary"
-                      : "btn-outline-secondary border-transparent text-body hover-border"
-                  }`}
+                  className="btn d-flex align-items-center w-100 text-start py-2.5 px-3 transition-all border-0 rounded-2"
                   style={{
-                    backgroundColor: isActive ? "var(--app-primary)" : "transparent",
-                    color: isActive ? "#ffffff" : "var(--app-text-primary)",
+                    fontSize: "0.8125rem",
+                    letterSpacing: "-0.01em",
+                    borderRadius: "6px",
+                    backgroundColor: isActive ? "rgba(99, 102, 241, 0.12)" : "transparent",
+                    color: isActive ? "var(--app-primary)" : "var(--app-text-secondary)",
+                    borderLeft: isActive ? "3px solid var(--app-primary)" : "3px solid transparent",
+                    fontWeight: isActive ? 600 : 400,
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = "var(--app-surface-subtle)";
+                      e.currentTarget.style.color = "var(--app-text-primary)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "var(--app-text-secondary)";
+                    }
                   }}
                 >
-                  <span className={isActive ? "text-white" : "text-secondary"}>{item.icon}</span>
+                  <span
+                    className="d-flex align-items-center justify-content-center flex-shrink-0 me-3"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      color: isActive ? "var(--app-primary)" : "var(--app-text-muted)",
+                      transition: "color 0.15s ease",
+                    }}
+                  >
+                    {item.icon}
+                  </span>
                   <span className="text-truncate">{item.label}</span>
                 </button>
               );
@@ -250,7 +304,9 @@ export default function UIKitPage() {
           <InputsSection />
           <PageHeaderSection />
           <TablesSection />
+          <PaginationSection />
           <FeedbackSection />
+          <SkeletonSection />
           <SidebarSection />
         </div>
       </main>

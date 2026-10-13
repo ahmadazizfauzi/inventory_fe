@@ -9,6 +9,7 @@ import AppPageHeader from "@/components/layout/AppPageHeader";
 import AppFormSection from "@/components/layout/AppFormSection";
 import AppInput from "@/components/inputs/AppInput";
 import AppSelect from "@/components/inputs/AppSelect";
+import AppPagination from "@/components/navigation/AppPagination";
 import { Edit2, Trash2, Plus, Check, Barcode, DollarSign } from "lucide-react";
 
 interface ProductRow {
@@ -69,6 +70,7 @@ export default function TablesSection() {
   const [data, setData] = useState<ProductRow[]>(initialProducts);
   const [mode, setMode] = useState<"list" | "create" | "edit">("list");
   const [selectedProduct, setSelectedProduct] = useState<ProductRow | null>(null);
+  const [demoPage, setDemoPage] = useState<number>(1);
 
   // Form fields state
   const [formName, setFormName] = useState("");
@@ -261,6 +263,17 @@ export default function TablesSection() {
             data={data}
             keyExtractor={(row) => row.id}
           />
+
+          {/* AppPagination Component Showcase */}
+          <div className="mt-3 p-3 rounded-3 border" style={{ borderColor: "var(--app-border)", backgroundColor: "var(--app-surface)" }}>
+            <AppPagination
+              currentPage={demoPage}
+              totalPages={11}
+              totalItems={108}
+              itemsPerPage={10}
+              onPageChange={(p) => setDemoPage(p)}
+            />
+          </div>
         </>
       ) : (
         <div>

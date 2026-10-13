@@ -14,14 +14,15 @@ export interface AppSelectProps extends React.SelectHTMLAttributes<HTMLSelectEle
   helperText?: string;
   error?: string;
   options?: AppSelectOption[];
+  wrapperClassName?: string;
 }
 
 const AppSelect = forwardRef<HTMLSelectElement, AppSelectProps>(
-  ({ className, label, helperText, error, options = [], id, children, disabled, ...props }, ref) => {
+  ({ className, label, helperText, error, options = [], id, children, disabled, wrapperClassName, ...props }, ref) => {
     const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
     return (
-      <div className="mb-3 w-100">
+      <div className={cn("mb-3 w-100", wrapperClassName)}>
         {label && (
           <label htmlFor={selectId} className="form-label d-block mb-1">
             <AppTypography variant="label" tone="secondary">

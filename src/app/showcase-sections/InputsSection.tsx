@@ -4,12 +4,15 @@ import React, { useState } from "react";
 import AppTypography from "@/components/typography/AppTypography";
 import AppInput from "@/components/inputs/AppInput";
 import AppSelect from "@/components/inputs/AppSelect";
+import AppDropdown from "@/components/inputs/AppDropdown";
 import AppTextarea from "@/components/inputs/AppTextarea";
 import { Search, DollarSign, Barcode, Mail, Lock } from "lucide-react";
 
 export default function InputsSection() {
   const [sku, setSku] = useState("SKU-INV-2026-001");
   const [productName, setProductName] = useState("Server Rack 42U Enterprise");
+  const [selectedCategory, setSelectedCategory] = useState<string | number>("1");
+  const [selectedStockStatus, setSelectedStockStatus] = useState<string | number>("all");
 
   return (
     <section id="inputs" className="mb-5 pb-4 border-bottom" style={{ borderColor: "var(--app-border)" }}>
@@ -99,6 +102,59 @@ export default function InputsSection() {
               label="Catatan Mutasi / Alasan Perubahan Stok"
               placeholder="Tuliskan keterangan detail mutasi barang..."
               rows={2}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* AppDropdown Showcase (Standard & Searchable) */}
+      <div className="mt-4 p-4 rounded-3 border" style={{ backgroundColor: "var(--app-surface)", borderColor: "var(--app-border)" }}>
+        <div className="mb-3">
+          <AppTypography variant="eyebrow" tone="accent" className="d-block mb-1">
+            AppDropdown.tsx
+          </AppTypography>
+          <AppTypography variant="cardTitle" tone="primary" className="d-block">
+            Modern Dropdown & Searchable Dropdown
+          </AppTypography>
+          <p className="text-secondary small mb-0">
+            Dropdown kustom UI Kit dengan dukungan mode standar, searchable dengan live filter pencarian, tombol reset pilihan, dan animasi chevron.
+          </p>
+        </div>
+
+        <div className="row g-3">
+          <div className="col-12 col-md-6">
+            <AppDropdown
+              label="Pilih Kategori (Searchable)"
+              placeholder="Cari atau pilih kategori..."
+              searchable={true}
+              clearable={true}
+              value={selectedCategory}
+              onChange={(val) => setSelectedCategory(val)}
+              options={[
+                { value: "1", label: "Sembako & Kebutuhan Pokok" },
+                { value: "2", label: "Minuman & Kemasan" },
+                { value: "3", label: "Makanan Ringan & Snack" },
+                { value: "4", label: "Perlengkapan Mandi & Cuci" },
+                { value: "5", label: "Alat Tulis Kantor (ATK)" },
+                { value: "6", label: "Pakaian & Tekstil" },
+              ]}
+              helperText="Ketik nama kategori untuk memfilter opsi secara instan"
+            />
+          </div>
+
+          <div className="col-12 col-md-6">
+            <AppDropdown
+              label="Status Ketersediaan Stok (Standar)"
+              placeholder="Semua Status Stok"
+              value={selectedStockStatus}
+              onChange={(val) => setSelectedStockStatus(val)}
+              options={[
+                { value: "all", label: "Semua Status Stok" },
+                { value: "in_stock", label: "Stok Tersedia (> 10 item)" },
+                { value: "low_stock", label: "Stok Menipis (<= 10 item)" },
+                { value: "out_of_stock", label: "Stok Habis (0 item)" },
+              ]}
+              helperText="Dropdown reguler tanpa kotak input pencarian"
             />
           </div>
         </div>

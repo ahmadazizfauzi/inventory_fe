@@ -37,12 +37,11 @@ export default function AppPageHeader({
             <button
               type="button"
               onClick={onBack}
-              className="btn btn-outline-secondary btn-sm p-1 rounded-2 d-flex align-items-center justify-content-center border"
-              style={{ width: 34, height: 34, borderColor: "var(--app-border)" }}
+              className="btn p-0 d-flex align-items-center justify-content-center flex-shrink-0 app-header-back-btn"
               title="Kembali"
               aria-label="Kembali"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
             </button>
           )}
           <div>

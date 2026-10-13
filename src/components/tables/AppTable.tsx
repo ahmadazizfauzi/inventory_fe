@@ -3,6 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import AppTypography from "../typography/AppTypography";
+import AppSkeleton from "../feedback/AppSkeleton";
 
 export interface ColumnDef<T> {
   key: string;
@@ -10,6 +11,7 @@ export interface ColumnDef<T> {
   render?: (row: T, index: number) => React.ReactNode;
   className?: string;
   align?: "left" | "center" | "right";
+  width?: number | string;
 }
 
 export interface AppTableProps<T> {
@@ -21,6 +23,7 @@ export interface AppTableProps<T> {
   hoverable?: boolean;
   striped?: boolean;
   className?: string;
+  minWidth?: number | string;
 }
 
 export default function AppTable<T>({
@@ -32,11 +35,16 @@ export default function AppTable<T>({
   hoverable = true,
   striped = false,
   className,
+  minWidth = 850,
 }: AppTableProps<T>) {
   return (
     <div
-      className={cn("table-responsive rounded-3 border overflow-hidden", className)}
-      style={{ borderColor: "var(--app-border)" }}
+      className={cn("table-responsive rounded-3 border", className)}
+      style={{
+        borderColor: "var(--app-border)",
+        overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
+      }}
     >
       <table
         className={cn(
@@ -44,6 +52,7 @@ export default function AppTable<T>({
           hoverable && "table-hover",
           striped && "table-striped"
         )}
+        style={{ minWidth }}
       >
         <thead className="text-uppercase font-body">
           <tr>
@@ -57,7 +66,7 @@ export default function AppTable<T>({
                   col.align === "right" && "text-end",
                   col.className
                 )}
-                style={{ borderColor: "var(--app-border)" }}
+                style={{ borderColor: "var(--app-border)", width: col.width }}
               >
                 <AppTypography variant="tableHeader" tone="muted">
                   {col.header}
@@ -68,14 +77,19 @@ export default function AppTable<T>({
         </thead>
         <tbody style={{ backgroundColor: "var(--app-surface)" }}>
           {isLoading ? (
-            <tr>
-              <td colSpan={columns.length} className="text-center py-5">
-                <div className="spinner-border text-primary spinner-border-sm me-2" role="status" />
-                <AppTypography variant="bodySm" tone="muted">
-                  Memuat data...
-                </AppTypography>
-              </td>
-            </tr>
+            Array.from({ length: 5 }).map((_, rIdx) => (
+              <tr key={`skeleton-row-${rIdx}`} style={{ borderColor: "var(--app-border)" }}>
+                {columns.map((col, cIdx) => (
+                  <td key={`skeleton-col-${cIdx}`} className="py-3 px-3">
+                    <AppSkeleton
+                      height={18}
+                      width={cIdx === 0 ? "80%" : cIdx === 1 ? "60%" : "40%"}
+                      borderRadius={4}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))
           ) : data.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="text-center py-5">
